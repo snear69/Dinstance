@@ -17,7 +17,6 @@ import Footer from './components/Footer';
 import DeliveryModal from './components/DeliveryModal';
 import LoadingScreen from './components/LoadingScreen';
 import Partners from './components/Partners';
-import TestSprite from './components/TestSprite';
 import { DocsPage, TermsPage, PrivacyPage } from './pages/Legal';
 
 // Scroll to top on route change
@@ -83,8 +82,7 @@ function App() {
       
       {/* Removed overflow-hidden to prevent black screen if loader hangs */}
       <div className="relative min-h-screen bg-oracle-dark">
-        <TestSprite />
-        {/* <Scene /> */}
+        <Scene />
         <Navbar />
         
         <Routes>

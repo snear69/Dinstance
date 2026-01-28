@@ -30,7 +30,11 @@ const ParticleField = (props) => {
 const Scene = () => {
   return (
     <div className="fixed inset-0 -z-10 bg-black">
-      <Canvas camera={{ position: [0, 0, 1] }}>
+      <Canvas 
+        camera={{ position: [0, 0, 1] }}
+        gl={{ antialias: false, alpha: false }}
+        dpr={[1, 1.5]}
+      >
         <ParticleField />
       </Canvas>
       <div className="absolute inset-0 bg-linear-to-b from-transparent via-oracle-dark/50 to-oracle-dark"></div>

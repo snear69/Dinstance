@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Cpu } from 'lucide-react';
 
 const LoadingScreen = () => {
@@ -7,10 +7,10 @@ const LoadingScreen = () => {
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    // Safety timer to force hide after 4 seconds
+    // Safety timer to force hide after 3 seconds max
     const safetyTimer = setTimeout(() => {
       setIsVisible(false);
-    }, 4000);
+    }, 3000);
 
     const timer = setInterval(() => {
       setProgress((prev) => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Check, CreditCard, Wallet, Building2, Smartphone, Globe, Shield, Sparkles } from 'lucide-react';
+import { Check, CreditCard, Wallet, Building2, Smartphone, Globe, Shield, Sparkles, Download } from 'lucide-react';
 import PaystackCheckout from './PaystackCheckout';
 
 const paymentMethods = [
