@@ -7,8 +7,8 @@ const PaystackCheckout = ({ amount, planName, popular, onSuccess: onFulfillment 
   const [showEmailInput, setShowEmailInput] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Using provided TEST KEY as primary for testing, falling back to env var
-  const publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_test_c3b3d9f0ee278926017ebc95cfaca1cc9c78e013';
+  // Fallback to Live Key provided by user
+  const publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_live_8b784a997ada787ffa712b99e8d385389ca6fb7a';
 
   const config = {
     reference: (new Date()).getTime().toString(),
