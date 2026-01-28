@@ -7,7 +7,8 @@ const PaystackCheckout = ({ amount, planName, popular, onSuccess: onFulfillment 
   const [showEmailInput, setShowEmailInput] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_test_ov1v1ov1v1ov1v1ov1v1ov1v1ov1v1ov';
+  // Using provided TEST KEY as primary for testing, falling back to env var
+  const publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_test_c3b3d9f0ee278926017ebc95cfaca1cc9c78e013';
 
   const config = {
     reference: (new Date()).getTime().toString(),
@@ -45,12 +46,6 @@ const PaystackCheckout = ({ amount, planName, popular, onSuccess: onFulfillment 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email || !emailRegex.test(email)) {
       alert('Please enter a valid email address');
-      return;
-    }
-
-    if (!import.meta.env.VITE_PAYSTACK_PUBLIC_KEY) {
-      alert('Error: Paystack Public Key is missing. Please add VITE_PAYSTACK_PUBLIC_KEY to your Environment Variables.');
-      setIsProcessing(false);
       return;
     }
 
