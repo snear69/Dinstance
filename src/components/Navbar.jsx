@@ -65,13 +65,14 @@ const Navbar = () => {
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-oracle-blue transition-all group-hover:w-full"></span>
             </motion.a>
           ))}
-          <motion.button
+          <motion.a
+            href="/#pricing"
             whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(0,186,255,0.4)" }}
             whileTap={{ scale: 0.95 }}
             className="px-6 py-2.5 rounded-xl bg-oracle-blue text-black text-xs font-black uppercase tracking-widest"
           >
             Get Started
-          </motion.button>
+          </motion.a>
         </div>
 
         {/* Mobile Toggle */}
@@ -126,14 +127,16 @@ const Navbar = () => {
                   {link.name}
                 </motion.a>
               ))}
-              <motion.button 
+              <motion.a 
+                href="/#pricing"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
+                onClick={() => setMobileMenuOpen(false)}
                 className="mt-8 px-12 py-5 rounded-2xl bg-oracle-blue text-black font-black text-xl shadow-[0_0_40px_rgba(0,186,255,0.3)] uppercase tracking-widest"
               >
                 Get Started
-              </motion.button>
+              </motion.a>
               
               <div className="absolute bottom-12 text-zinc-600 text-[10px] font-black uppercase tracking-[0.5em]">
                 Secure Protocol Active
