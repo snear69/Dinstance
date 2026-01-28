@@ -15,6 +15,7 @@ import CTA from './components/CTA';
 import Guidelines from './components/Guidelines';
 import Footer from './components/Footer';
 import DeliveryModal from './components/DeliveryModal';
+import LoadingScreen from './components/LoadingScreen';
 import { DocsPage, TermsPage, PrivacyPage } from './pages/Legal';
 
 // Scroll to top on route change
@@ -43,6 +44,7 @@ const HomePage = ({ onFulfillment }) => (
 
 function App() {
   const [deliveryData, setDeliveryData] = useState({ isOpen: false, planName: '', email: '' });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -56,7 +58,16 @@ function App() {
     }
 
     requestAnimationFrame(raf);
-    return () => lenis.destroy();
+    
+    // Simulate loading finished after the LoadingScreen component handles its own progress
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2500);
+
+    return () => {
+      lenis.destroy();
+      clearTimeout(timer);
+    };
   }, []);
 
   const handleFulfillment = (planName, email) => {
@@ -66,7 +77,8 @@ function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
-      <div className="relative min-h-screen">
+      <LoadingScreen />
+      <div className={`relative min-h-screen ${loading ? 'overflow-hidden max-h-screen' : ''}`}>
         <Scene />
         <Navbar />
         

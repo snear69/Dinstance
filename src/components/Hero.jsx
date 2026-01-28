@@ -15,7 +15,7 @@ const Hero = () => {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+    <section className="relative min-h-[90vh] md:min-h-screen flex items-center justify-center pt-24 pb-12 overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
@@ -40,7 +40,7 @@ const Hero = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-oracle-blue/30 bg-oracle-blue/10 text-oracle-blue text-xs font-bold mb-8 uppercase tracking-widest"
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-oracle-blue/30 bg-oracle-blue/10 text-oracle-blue text-[10px] md:text-sm font-bold mb-8 uppercase tracking-[0.2em]"
         >
           <Sparkles size={14} className="animate-pulse" />
           <span>v2.0 Deploy Ready</span>
@@ -51,11 +51,11 @@ const Hero = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-5xl md:text-8xl font-black mb-6 leading-tight"
+          className="text-4xl sm:text-6xl md:text-8xl font-black mb-6 leading-[1.1] tracking-tighter"
         >
           <span className="text-white">Empower Your Code.</span>
           <br />
-          <span className="text-transparent bg-clip-text bg-linear-to-r from-oracle-blue to-oracle-purple glow-blue">
+          <span className="text-transparent bg-clip-text bg-linear-to-r from-oracle-blue via-white to-oracle-purple glow-blue leading-tight inline-block py-2">
             Oracle Endpoint
           </span>
         </motion.h1>
@@ -65,49 +65,49 @@ const Hero = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="flex items-center justify-center gap-3 mb-8"
+          className="flex items-center justify-center gap-2 md:gap-3 mb-8"
         >
-          <span className="text-zinc-500 text-xl">One platform to</span>
-          <div className="relative h-8 w-32 overflow-hidden">
+          <span className="text-zinc-500 text-sm md:text-xl">One platform to</span>
+          <div className="relative h-6 md:h-8 w-24 md:w-32 overflow-hidden">
             {words.map((word, idx) => (
               <motion.span
                 key={word}
-                className="absolute inset-0 text-xl font-bold text-oracle-blue flex items-center justify-center"
+                className="absolute inset-0 text-sm md:text-xl font-black text-oracle-blue flex items-center justify-center uppercase tracking-widest"
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ 
                   y: currentWord === idx ? 0 : -30, 
                   opacity: currentWord === idx ? 1 : 0 
                 }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.5, ease: "circOut" }}
               >
                 {word}
               </motion.span>
             ))}
           </div>
-          <span className="text-zinc-500 text-xl">everything.</span>
+          <span className="text-zinc-500 text-sm md:text-xl">everything.</span>
         </motion.div>
 
         <motion.p 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-zinc-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed"
+          className="text-zinc-400 text-base md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed px-4"
         >
-          Skip the servers. Get instant API endpoints, dynamic tokens, and enterprise-grade 
-          infrastructure—all with a single integration.
+          Skip the server overhead. Get enterprise-grade infrastructure, dynamic scaling, 
+          and secure API endpoints—all with one-time payment.
         </motion.p>
 
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center"
+          className="flex flex-col sm:flex-row gap-4 justify-center px-6"
         >
-          <a href="#pricing" className="px-8 py-4 bg-oracle-blue text-black font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-white transition-colors group">
-            Get Started <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+          <a href="#pricing" className="px-8 py-4 bg-oracle-blue text-black font-black uppercase tracking-widest text-xs rounded-xl flex items-center justify-center gap-2 hover:bg-white transition-all transform hover:scale-105 group">
+            Get Started <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
           </a>
-          <a href="#api" className="px-8 py-4 glass text-white font-bold rounded-lg hover:bg-white/10 transition-colors">
-            View API Docs
+          <a href="#api" className="px-8 py-4 glass text-white font-black uppercase tracking-widest text-xs rounded-xl hover:bg-white/10 transition-all">
+            Technical Docs
           </a>
         </motion.div>
 
@@ -116,15 +116,15 @@ const Hero = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1, duration: 1 }}
-          className="mt-16 flex flex-wrap justify-center gap-3"
+          className="mt-20 flex flex-wrap justify-center gap-3 md:gap-4 opacity-50"
         >
-          {["Node.js", "Python", "Go", "Rust", "TypeScript", "Java"].map((tech, idx) => (
+          {["Node.js", "Python", "Go", "Rust", "Swift", "Java"].map((tech, idx) => (
             <motion.span
               key={tech}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1 + idx * 0.1 }}
-              className="px-3 py-1 text-xs bg-white/5 border border-white/10 rounded-full text-zinc-500"
+              className="px-4 py-1.5 text-[10px] uppercase font-bold bg-white/5 border border-white/10 rounded-full text-zinc-400"
             >
               {tech}
             </motion.span>
@@ -132,13 +132,13 @@ const Hero = () => {
         </motion.div>
       </div>
 
-      {/* Decorative elements */}
+      {/* Decorative vertical line */}
       <motion.div 
-        className="absolute bottom-10 left-1/2 -translate-x-1/2"
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 hidden md:block"
+        animate={{ height: [0, 80] }}
+        transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
       >
-        <div className="w-[1px] h-16 bg-linear-to-b from-oracle-blue to-transparent"></div>
+        <div className="w-[1px] h-20 bg-linear-to-b from-oracle-blue to-transparent"></div>
       </motion.div>
     </section>
   );
