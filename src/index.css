@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+@theme {
+  --color-oracle-blue: #00f2ff;
+  --color-oracle-purple: #7000ff;
+  --color-oracle-dark: #050505;
+  --font-inter: "Inter", sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-oracle-dark text-white font-inter selection:bg-oracle-blue selection:text-black antialiased overflow-x-hidden;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/5 backdrop-blur-lg border border-white/10;
+  }
+
+  .glow-blue {
+    text-shadow:
+      0 0 10px rgba(0, 242, 255, 0.5),
+      0 0 20px rgba(0, 242, 255, 0.2);
+  }
+
+  .glow-border {
+    @apply relative border border-transparent;
+    background-clip: padding-box;
+  }
+
+  .glow-border::after {
+    @apply content-[''] absolute -inset-px -z-10 rounded-[inherit] opacity-0 transition-opacity duration-500;
+    background: linear-gradient(
+      to right,
+      var(--color-oracle-blue),
+      var(--color-oracle-purple)
+    );
+  }
+
+  .glow-border:hover::after {
+    @apply opacity-100;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-oracle-dark;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-zinc-800 rounded-full hover:bg-zinc-700 transition-colors;
+}
