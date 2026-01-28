@@ -28,22 +28,22 @@ const testimonials = [
 
 const Testimonials = () => {
   return (
-    <section className="py-24 bg-white/1">
+    <section className="py-24 bg-white/1 relative overflow-hidden">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-3xl md:text-5xl font-bold mb-4"
+            className="text-3xl md:text-5xl font-black mb-4 uppercase tracking-tighter"
           >
-            Trusted by Industry Leaders
+            Trusted by <span className="text-oracle-blue">Industry Leaders</span>
           </motion.h2>
-          <p className="text-zinc-500">Engineering teams at top companies rely on Oracle Endpoint</p>
+          <p className="text-zinc-500 text-sm md:text-base uppercase font-bold tracking-widest">Engineering teams at top companies rely on Oracle Endpoint</p>
         </div>
 
         {/* Grid Layout */}
-        <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {testimonials.map((testimonial, idx) => (
             <motion.div
               key={idx}
@@ -51,35 +51,41 @@ const Testimonials = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.15 }}
-              className="p-8 glass rounded-2xl border-white/5 relative hover:border-oracle-blue/20 transition-colors"
+              whileHover={{ y: -5 }}
+              className="p-8 glass rounded-3xl border-white/5 relative hover:border-oracle-blue/30 transition-all duration-300"
             >
               <Quote className="absolute top-6 right-6 text-oracle-blue/10" size={32} />
               
               <div className="flex gap-1 mb-6">
                 {[...Array(testimonial.rating)].map((_, i) => (
-                  <Star key={i} size={14} className="text-yellow-500 fill-yellow-500" />
+                  <Star key={i} size={14} className="text-oracle-blue fill-oracle-blue" />
                 ))}
               </div>
 
-              <p className="text-zinc-300 mb-8 leading-relaxed text-sm">
+              <p className="text-zinc-300 mb-8 leading-relaxed text-sm md:text-base italic">
                 "{testimonial.content}"
               </p>
               
-              <div className="pt-6 border-t border-white/10">
-                <p className="font-bold text-white">{testimonial.name}</p>
-                <p className="text-zinc-500 text-xs">{testimonial.role}, {testimonial.company}</p>
+              <div className="pt-6 border-t border-white/10 flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-linear-to-br from-oracle-blue/20 to-oracle-purple/20 flex items-center justify-center font-black text-xs text-white">
+                  {testimonial.name[0]}
+                </div>
+                <div>
+                  <p className="font-bold text-white text-sm">{testimonial.name}</p>
+                  <p className="text-zinc-500 text-[10px] uppercase font-bold tracking-widest">{testimonial.role}, {testimonial.company}</p>
+                </div>
               </div>
             </motion.div>
           ))}
         </div>
 
-        {/* Company Logos */}
-        <div className="mt-16 flex justify-center items-center gap-12 opacity-40">
-          <span className="text-2xl font-bold tracking-tight">Stripe</span>
-          <span className="text-2xl font-bold tracking-tight">Shopify</span>
-          <span className="text-2xl font-bold tracking-tight">Vercel</span>
-          <span className="text-2xl font-bold tracking-tight">Twilio</span>
-          <span className="text-2xl font-bold tracking-tight">Notion</span>
+        {/* Company Logos - Wrapped for mobile */}
+        <div className="mt-20 flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-30 grayscale invert">
+          <span className="text-lg md:text-2xl font-black tracking-tighter uppercase italic">Stripe</span>
+          <span className="text-lg md:text-2xl font-black tracking-tighter uppercase italic">Shopify</span>
+          <span className="text-lg md:text-2xl font-black tracking-tighter uppercase italic">Vercel</span>
+          <span className="text-lg md:text-2xl font-black tracking-tighter uppercase italic">Twilio</span>
+          <span className="text-lg md:text-2xl font-black tracking-tighter uppercase italic">Notion</span>
         </div>
       </div>
     </section>

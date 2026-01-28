@@ -15,6 +15,15 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [mobileMenuOpen]);
+
   const navLinks = [
     { name: 'Features', href: '/#features' },
     { name: 'API', href: '/#api' },
@@ -25,10 +34,10 @@ const Navbar = () => {
 
   return (
     <nav 
-      className={`fixed top-0 left-0 right-0 z-100 transition-all duration-500 ${isScrolled ? 'py-3 glass border-b border-white/10' : 'py-6 bg-transparent'}`}
+      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${isScrolled ? 'py-3 bg-black/80 backdrop-blur-xl border-b border-white/10' : 'py-6 bg-transparent'}`}
     >
       <div className="container mx-auto px-6 flex justify-between items-center">
-        <Link to="/" className="flex items-center gap-2 group">
+        <Link to="/" className="flex items-center gap-2 group relative z-[110]">
           <motion.div
             whileHover={{ rotate: 180 }}
             transition={{ duration: 0.5 }}
@@ -59,7 +68,7 @@ const Navbar = () => {
           <motion.button
             whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(0,186,255,0.4)" }}
             whileTap={{ scale: 0.95 }}
-            className="px-6 py-2.5 rounded-xl bg-oracle-blue text-black text-xs font-black uppercase tracking-widest text-white"
+            className="px-6 py-2.5 rounded-xl bg-oracle-blue text-black text-xs font-black uppercase tracking-widest"
           >
             Get Started
           </motion.button>
@@ -67,32 +76,33 @@ const Navbar = () => {
 
         {/* Mobile Toggle */}
         <button 
-          className="md:hidden w-10 h-10 glass rounded-lg flex items-center justify-center text-white" 
+          className="md:hidden w-10 h-10 glass rounded-lg flex items-center justify-center text-white relative z-[110]" 
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu - Full Screen Overlay */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="md:hidden absolute top-full left-0 right-0 glass border-t border-white/10 overflow-hidden shadow-2xl"
+            initial={{ opacity: 0, x: '100%' }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed inset-0 z-[105] bg-black/95 backdrop-blur-2xl md:hidden"
           >
-            <div className="flex flex-col p-8 gap-6">
+            <div className="flex flex-col items-center justify-center h-full p-8 gap-8">
               {navLinks.map((link, idx) => (
                 <motion.a
                   key={link.name}
                   href={link.href}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.1 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + idx * 0.1 }}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="text-2xl font-black text-white hover:text-oracle-blue transition-colors"
+                  className="text-4xl font-black text-white hover:text-oracle-blue transition-colors uppercase tracking-tighter"
                 >
                   {link.name}
                 </motion.a>
@@ -100,11 +110,15 @@ const Navbar = () => {
               <motion.button 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="w-full py-5 rounded-2xl bg-oracle-blue text-black font-black text-lg shadow-[0_0_20px_rgba(0,186,255,0.3)] text-white"
+                transition={{ delay: 0.6 }}
+                className="mt-8 px-12 py-5 rounded-2xl bg-oracle-blue text-black font-black text-xl shadow-[0_0_40px_rgba(0,186,255,0.3)] uppercase tracking-widest"
               >
                 Get Started
               </motion.button>
+              
+              <div className="absolute bottom-12 text-zinc-600 text-[10px] font-black uppercase tracking-[0.5em]">
+                Secure Protocol Active
+              </div>
             </div>
           </motion.div>
         )}
