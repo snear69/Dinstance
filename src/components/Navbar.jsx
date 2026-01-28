@@ -106,74 +106,74 @@ const Navbar = () => {
       {/* Mobile Menu - Full Screen Overlay */}
       <AnimatePresence>
         {mobileMenuOpen && (
-          <>
-            {/* Dark overlay background */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[199] bg-black md:hidden"
-              onClick={() => setMobileMenuOpen(false)}
-            />
+          <motion.div
+            key="mobile-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-199 bg-black md:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+        )}
+        
+        {mobileMenuOpen && (
+          <motion.div
+            key="mobile-menu"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-200 bg-[#0a0a0a] md:hidden flex flex-col"
+          >
+            {/* Mobile Menu Header */}
+            <div className="flex justify-between items-center px-6 py-6 border-b border-white/10 bg-black">
+              <Link to="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2">
+                <div className="w-10 h-10 rounded-xl bg-oracle-blue/10 flex items-center justify-center border border-oracle-blue/20">
+                  <Cpu className="text-oracle-blue w-6 h-6" />
+                </div>
+                <span className="text-xl font-bold tracking-tighter text-white">
+                  ORACLE <span className="text-oracle-blue">ENDPOINT</span>
+                </span>
+              </Link>
+              <button 
+                className="w-10 h-10 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center text-white" 
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <X size={20} />
+              </button>
+            </div>
             
-            {/* Menu content */}
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-              className="fixed inset-0 z-[200] bg-[#0a0a0a] md:hidden flex flex-col"
-            >
-              {/* Mobile Menu Header */}
-              <div className="flex justify-between items-center px-6 py-6 border-b border-white/10 bg-black">
-                <Link to="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2">
-                  <div className="w-10 h-10 rounded-xl bg-oracle-blue/10 flex items-center justify-center border border-oracle-blue/20">
-                    <Cpu className="text-oracle-blue w-6 h-6" />
-                  </div>
-                  <span className="text-xl font-bold tracking-tighter text-white">
-                    ORACLE <span className="text-oracle-blue">ENDPOINT</span>
-                  </span>
-                </Link>
-                <button 
-                  className="w-10 h-10 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center text-white" 
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <X size={20} />
-                </button>
-              </div>
-              
-              {/* Mobile Menu Links */}
-              <div className="flex flex-col items-center justify-center flex-1 p-8 gap-6 bg-[#0a0a0a]">
-              {navLinks.map((link, idx) => (
-                <motion.a
-                  key={link.name}
-                  href={`#${link.id}`}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 + idx * 0.1 }}
-                  onClick={(e) => scrollToSection(e, link.id)}
-                  className="text-4xl font-black text-white hover:text-oracle-blue transition-colors uppercase tracking-tighter"
-                >
-                  {link.name}
-                </motion.a>
-              ))}
-              <motion.a 
-                href="#pricing"
+            {/* Mobile Menu Links */}
+            <div className="flex flex-col items-center justify-center flex-1 p-8 gap-6 bg-[#0a0a0a]">
+            {navLinks.map((link, idx) => (
+              <motion.a
+                key={link.name}
+                href={`#${link.id}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                onClick={(e) => scrollToSection(e, 'pricing')}
-                className="mt-8 px-12 py-5 rounded-2xl bg-oracle-blue text-black font-black text-xl shadow-[0_0_40px_rgba(0,186,255,0.3)] uppercase tracking-widest text-center"
+                transition={{ delay: 0.1 + idx * 0.1 }}
+                onClick={(e) => scrollToSection(e, link.id)}
+                className="text-4xl font-black text-white hover:text-oracle-blue transition-colors uppercase tracking-tighter"
               >
-                Get Started
+                {link.name}
               </motion.a>
-              
-                <div className="absolute bottom-12 text-zinc-600 text-[10px] font-black uppercase tracking-[0.5em]">
-                  Secure Protocol Active
-                </div>
+            ))}
+            <motion.a 
+              href="#pricing"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              onClick={(e) => scrollToSection(e, 'pricing')}
+              className="mt-8 px-12 py-5 rounded-2xl bg-oracle-blue text-black font-black text-xl shadow-[0_0_40px_rgba(0,186,255,0.3)] uppercase tracking-widest text-center"
+            >
+              Get Started
+            </motion.a>
+            
+              <div className="absolute bottom-12 text-zinc-600 text-[10px] font-black uppercase tracking-[0.5em]">
+                Secure Protocol Active
               </div>
-            </motion.div>
-          </>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </nav>
