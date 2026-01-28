@@ -7,8 +7,10 @@ const PaystackCheckout = ({ amount, planName, popular, onSuccess: onFulfillment 
   const [showEmailInput, setShowEmailInput] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Fallback to Live Key provided by user
-  const publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_live_8b784a997ada787ffa712b99e8d385389ca6fb7a';
+  // IMPORTANT: Never hardcode Paystack keys in the frontend bundle.
+  // Set `VITE_PAYSTACK_PUBLIC_KEY` in your environment (see .env.example).
+  const publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
+  const hasPublicKey = Boolean(publicKey);
 
   const config = {
     reference: (new Date()).getTime().toString(),
@@ -38,6 +40,10 @@ const PaystackCheckout = ({ amount, planName, popular, onSuccess: onFulfillment 
   };
 
   const handleClick = () => {
+    if (!hasPublicKey) {
+      alert('Payment is not configured. Missing VITE_PAYSTACK_PUBLIC_KEY.');
+      return;
+    }
     if (!showEmailInput) {
       setShowEmailInput(true);
       return;
@@ -91,6 +97,7 @@ const PaystackCheckout = ({ amount, planName, popular, onSuccess: onFulfillment 
   return (
     <button 
       onClick={handleClick}
+      disabled={!hasPublicKey}
       className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${popular ? 'bg-oracle-blue text-black hover:bg-white' : 'bg-white/5 text-white hover:bg-white/10'}`}
     >
       Get Started <ArrowRight size={18} />

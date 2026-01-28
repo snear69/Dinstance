@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Check, CreditCard, Wallet, Building2, Smartphone, Globe, Shield, Sparkles } from 'lucide-react';
 import PaystackCheckout from './PaystackCheckout';
@@ -145,9 +146,9 @@ const Pricing = ({ onFulfillment }) => {
               We offer a minimum 99.9% uptime for all versions regardless of tier.
             </p>
           </div>
-          <button className="px-6 py-3 glass rounded-xl text-xs font-black uppercase tracking-widest hover:bg-white/5 transition-colors shrink-0">
+          <Link to="/docs" className="px-6 py-3 glass rounded-xl text-xs font-black uppercase tracking-widest hover:bg-white/5 transition-colors shrink-0">
             Full SLA
-          </button>
+          </Link>
         </motion.div>
       </div>
     </section>

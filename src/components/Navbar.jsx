@@ -87,13 +87,32 @@ const Navbar = () => {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, x: '100%' }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed inset-0 z-[105] bg-black/95 backdrop-blur-2xl md:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[200] bg-oracle-dark/98 backdrop-blur-xl md:hidden flex flex-col"
           >
-            <div className="flex flex-col items-center justify-center h-full p-8 gap-8">
+            {/* Mobile Menu Header */}
+            <div className="flex justify-between items-center px-6 py-6 border-b border-white/10">
+              <Link to="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2">
+                <div className="w-10 h-10 rounded-xl bg-oracle-blue/10 flex items-center justify-center border border-oracle-blue/20">
+                  <Cpu className="text-oracle-blue w-6 h-6" />
+                </div>
+                <span className="text-xl font-bold tracking-tighter text-white">
+                  ORACLE <span className="text-oracle-blue">ENDPOINT</span>
+                </span>
+              </Link>
+              <button 
+                className="w-10 h-10 glass rounded-lg flex items-center justify-center text-white" 
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            {/* Mobile Menu Links */}
+            <div className="flex flex-col items-center justify-center flex-1 p-8 gap-8">
               {navLinks.map((link, idx) => (
                 <motion.a
                   key={link.name}

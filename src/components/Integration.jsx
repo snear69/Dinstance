@@ -1,23 +1,48 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { ExternalLink, Lock, Terminal, Shield, Zap, Globe, CheckCircle } from 'lucide-react';
 
 const TypewriterCode = ({ code }) => {
   const [displayedCode, setDisplayedCode] = useState("");
   const [index, setIndex] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
+  const containerRef = useRef(null);
 
+  // Intersection Observer to detect visibility
   useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasStarted) {
+          setIsVisible(true);
+          setHasStarted(true);
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [hasStarted]);
+
+  // Typing effect - only runs when visible
+  useEffect(() => {
+    if (!isVisible) return;
+    
     if (index < code.length) {
       const timer = setTimeout(() => {
         setDisplayedCode((prev) => prev + code[index]);
         setIndex((prev) => prev + 1);
-      }, 20); // Slightly slower for better readability
+      }, 25); // Slightly slower for better readability
       return () => clearTimeout(timer);
     }
-  }, [index, code]);
+  }, [index, code, isVisible]);
 
   return (
-    <pre className="text-oracle-blue/80 leading-relaxed font-mono">
+    <pre ref={containerRef} className="text-oracle-blue/80 leading-relaxed font-mono text-xs sm:text-sm">
       {displayedCode}
       <span className="inline-block w-2 h-4 bg-oracle-blue/50 animate-pulse ml-1 translate-y-0.5" />
     </pre>
@@ -110,14 +135,20 @@ const Integration = () => {
                     </div>
                   </div>
                 </div>
-                <div className="p-8 font-mono text-sm relative group min-h-[180px]">
-                  <TypewriterCode code={codeSnippetPreview} />
+                <div className="font-mono text-sm relative group">
+                  {/* Code display area with fixed height */}
+                  <div className="p-4 sm:p-8 min-h-[140px] sm:min-h-[160px]">
+                    <TypewriterCode code={codeSnippetPreview} />
+                  </div>
                   
-                  {/* Blur overlay */}
-                  <div className="absolute inset-x-0 bottom-0 h-2/3 bg-linear-to-t from-zinc-950 via-zinc-950/80 to-transparent flex items-end justify-center pb-8 px-8">
+                  {/* Gradient fade effect over code */}
+                  <div className="absolute inset-x-0 bottom-[60px] sm:bottom-[70px] h-16 bg-linear-to-t from-zinc-950 to-transparent pointer-events-none" />
+                  
+                  {/* CTA section - separate from code, no overlap */}
+                  <div className="border-t border-white/5 bg-zinc-950 px-4 sm:px-8 py-4 sm:py-6">
                     <div className="text-center">
-                      <p className="text-zinc-500 text-xs mb-4 max-w-[200px]">Unlock more than <span className="text-white">50+ API endpoints</span> and configuration schemas.</p>
-                      <button className="text-xs font-bold text-white py-2 px-4 rounded-lg bg-oracle-blue/10 border border-oracle-blue/20 hover:bg-oracle-blue/20 transition-colors uppercase tracking-widest">
+                      <p className="text-zinc-500 text-[10px] sm:text-xs mb-3 sm:mb-4 max-w-[220px] mx-auto leading-relaxed">Unlock more than <span className="text-white font-semibold">50+ API endpoints</span> and configuration schemas.</p>
+                      <button className="text-[10px] sm:text-xs font-bold text-white py-2 px-4 rounded-lg bg-oracle-blue/10 border border-oracle-blue/20 hover:bg-oracle-blue/20 transition-colors uppercase tracking-widest">
                         Show More
                       </button>
                     </div>

@@ -16,6 +16,7 @@ import Guidelines from './components/Guidelines';
 import Footer from './components/Footer';
 import DeliveryModal from './components/DeliveryModal';
 import LoadingScreen from './components/LoadingScreen';
+import Partners from './components/Partners';
 import { DocsPage, TermsPage, PrivacyPage } from './pages/Legal';
 
 // Scroll to top on route change
@@ -31,6 +32,7 @@ const HomePage = ({ onFulfillment }) => (
   <main className="relative z-10">
     <Hero />
     <Stats />
+    <Partners />
     <Features />
     <HowItWorks />
     <Integration />
