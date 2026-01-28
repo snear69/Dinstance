@@ -1,15 +1,37 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ExternalLink, Lock, Terminal, Shield, Zap, Globe } from 'lucide-react';
+import { ExternalLink, Lock, Terminal, Shield, Zap, Globe, CheckCircle } from 'lucide-react';
+
+const TypewriterCode = ({ code }) => {
+  const [displayedCode, setDisplayedCode] = useState("");
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    if (index < code.length) {
+      const timer = setTimeout(() => {
+        setDisplayedCode((prev) => prev + code[index]);
+        setIndex((prev) => prev + 1);
+      }, 20); // Slightly slower for better readability
+      return () => clearTimeout(timer);
+    }
+  }, [index, code]);
+
+  return (
+    <pre className="text-oracle-blue/80 leading-relaxed font-mono">
+      {displayedCode}
+      <span className="inline-block w-2 h-4 bg-oracle-blue/50 animate-pulse ml-1 translate-y-0.5" />
+    </pre>
+  );
+};
 
 const Integration = () => {
   const codeSnippetPreview = `{
-  "auth_token": "oracle_••••••••••••",
-  "endpoint_url": "api.oracle-endpoint.dev/v1/...",
+  "auth_token": "oracle_live_9920x...",
+  "endpoint": "api.oracle-endpoint.dev/v1",
   "config": {
     "env": "production",
-    "region": "us-east-1",
-    "scaling": "auto"
+    "region": "global-edge",
+    "scaling": "dynamic"
   }
 }`;
 
@@ -82,15 +104,14 @@ const Integration = () => {
                   </div>
                   <span className="text-xs text-zinc-500 font-mono ml-4 tracking-wider">production_deploy.json</span>
                   <div className="ml-auto">
-                    <div className="px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-500 text-[10px] font-black uppercase tracking-tighter">
-                      Gated Access
+                    <div className="px-2 py-0.5 rounded bg-oracle-blue/10 border border-oracle-blue/20 text-oracle-blue text-[10px] font-black uppercase tracking-tighter flex items-center gap-1.5">
+                      <CheckCircle size={10} className="text-oracle-blue" />
+                      Granted Access
                     </div>
                   </div>
                 </div>
-                <div className="p-8 font-mono text-sm relative group">
-                  <pre className="text-oracle-blue/80 leading-relaxed">
-                    {codeSnippetPreview}
-                  </pre>
+                <div className="p-8 font-mono text-sm relative group min-h-[180px]">
+                  <TypewriterCode code={codeSnippetPreview} />
                   
                   {/* Blur overlay */}
                   <div className="absolute inset-x-0 bottom-0 h-2/3 bg-linear-to-t from-zinc-950 via-zinc-950/80 to-transparent flex items-end justify-center pb-8 px-8">

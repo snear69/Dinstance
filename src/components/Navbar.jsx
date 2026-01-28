@@ -25,7 +25,7 @@ const Navbar = () => {
 
   return (
     <nav 
-      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${isScrolled ? 'py-3 glass border-b border-white/10' : 'py-6 bg-transparent'}`}
+      className={`fixed top-0 left-0 right-0 z-100 transition-all duration-500 ${isScrolled ? 'py-3 glass border-b border-white/10' : 'py-6 bg-transparent'}`}
     >
       <div className="container mx-auto px-6 flex justify-between items-center">
         <Link to="/" className="flex items-center gap-2 group">
@@ -59,7 +59,7 @@ const Navbar = () => {
           <motion.button
             whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(0,186,255,0.4)" }}
             whileTap={{ scale: 0.95 }}
-            className="px-6 py-2.5 rounded-xl bg-oracle-blue text-black text-xs font-black uppercase tracking-widest"
+            className="px-6 py-2.5 rounded-xl bg-oracle-blue text-black text-xs font-black uppercase tracking-widest text-white"
           >
             Get Started
           </motion.button>
@@ -101,7 +101,7 @@ const Navbar = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="w-full py-5 rounded-2xl bg-oracle-blue text-black font-black text-lg shadow-[0_0_20px_rgba(0,186,255,0.3)]"
+                className="w-full py-5 rounded-2xl bg-oracle-blue text-black font-black text-lg shadow-[0_0_20px_rgba(0,186,255,0.3)] text-white"
               >
                 Get Started
               </motion.button>

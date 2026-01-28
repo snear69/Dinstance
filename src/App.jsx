@@ -28,7 +28,7 @@ const ScrollToTop = () => {
 };
 
 const HomePage = ({ onFulfillment }) => (
-  <main>
+  <main className="relative z-10">
     <Hero />
     <Stats />
     <Features />
@@ -44,7 +44,6 @@ const HomePage = ({ onFulfillment }) => (
 
 function App() {
   const [deliveryData, setDeliveryData] = useState({ isOpen: false, planName: '', email: '' });
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -59,10 +58,10 @@ function App() {
 
     requestAnimationFrame(raf);
     
-    // Simulate loading finished after the LoadingScreen component handles its own progress
+    // Safety exit for loading screen - background timer
     const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2500);
+      // Logic handled within LoadingScreen component
+    }, 3000);
 
     return () => {
       lenis.destroy();
@@ -78,7 +77,9 @@ function App() {
     <BrowserRouter>
       <ScrollToTop />
       <LoadingScreen />
-      <div className={`relative min-h-screen ${loading ? 'overflow-hidden max-h-screen' : ''}`}>
+      
+      {/* Removed overflow-hidden to prevent black screen if loader hangs */}
+      <div className="relative min-h-screen bg-oracle-dark">
         <Scene />
         <Navbar />
         
