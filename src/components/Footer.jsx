@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Mail, Cpu, Send, CheckCircle, Loader2, Phone, Globe, ExternalLink } from 'lucide-react';
 
 const Footer = () => {
@@ -192,11 +193,16 @@ const Footer = () => {
         <div className="py-6 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-2">
             <Cpu className="text-oracle-blue w-5 h-5" />
-            <span className="font-bold tracking-tighter">ORACLE ENDPOINT</span>
+            <Link to="/" className="font-bold tracking-tighter">ORACLE ENDPOINT</Link>
           </div>
           <p className="text-zinc-600 text-xs">
             © 2023 Oracle Endpoint. All rights reserved.
           </p>
+          <div className="flex gap-6 text-zinc-500 text-xs font-medium">
+            <Link to="/docs" className="hover:text-oracle-blue transition-colors">Docs</Link>
+            <Link to="/terms" className="hover:text-oracle-blue transition-colors">Terms</Link>
+            <Link to="/privacy" className="hover:text-oracle-blue transition-colors">Privacy</Link>
+          </div>
         </div>
       </div>
 
