@@ -121,15 +121,17 @@ const Integration = () => {
               <div className="absolute -top-10 -right-10 w-40 h-40 bg-oracle-blue/20 blur-[60px] rounded-full" />
               
               <div className="bg-zinc-950 rounded-2xl overflow-hidden shadow-2xl border border-white/5 relative z-10">
-                <div className="flex items-center gap-2 px-6 py-4 bg-zinc-900 border-b border-white/5">
-                  <div className="flex gap-2">
-                    <div className="w-3 h-3 rounded-full bg-red-500/30"></div>
-                    <div className="w-3 h-3 rounded-full bg-yellow-500/30"></div>
-                    <div className="w-3 h-3 rounded-full bg-green-500/30"></div>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-6 py-4 bg-zinc-900 border-b border-white/5">
+                  <div className="flex items-center gap-2">
+                    <div className="flex gap-1.5">
+                      <div className="w-2.5 h-2.5 rounded-full bg-red-500/30"></div>
+                      <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/30"></div>
+                      <div className="w-2.5 h-2.5 rounded-full bg-green-500/30"></div>
+                    </div>
+                    <span className="text-[10px] sm:text-xs text-zinc-500 font-mono ml-2 tracking-wider">production_deploy.json</span>
                   </div>
-                  <span className="text-xs text-zinc-500 font-mono ml-4 tracking-wider">production_deploy.json</span>
-                  <div className="ml-auto">
-                    <div className="px-2 py-0.5 rounded bg-oracle-blue/10 border border-oracle-blue/20 text-oracle-blue text-[10px] font-black uppercase tracking-tighter flex items-center gap-1.5">
+                  <div className="shrink-0">
+                    <div className="inline-flex px-2 py-0.5 rounded bg-oracle-blue/10 border border-oracle-blue/20 text-oracle-blue text-[9px] sm:text-[10px] font-black uppercase tracking-tighter items-center gap-1.5">
                       <CheckCircle size={10} className="text-oracle-blue" />
                       Granted Access
                     </div>
@@ -148,9 +150,9 @@ const Integration = () => {
                   <div className="border-t border-white/5 bg-zinc-950 px-4 sm:px-8 py-4 sm:py-6">
                     <div className="text-center">
                       <p className="text-zinc-500 text-[10px] sm:text-xs mb-3 sm:mb-4 max-w-[220px] mx-auto leading-relaxed">Unlock more than <span className="text-white font-semibold">50+ API endpoints</span> and configuration schemas.</p>
-                      <button className="text-[10px] sm:text-xs font-bold text-white py-2 px-4 rounded-lg bg-oracle-blue/10 border border-oracle-blue/20 hover:bg-oracle-blue/20 transition-colors uppercase tracking-widest">
+                      <a href="#pricing" className="inline-block text-[10px] sm:text-xs font-bold text-white py-2 px-4 rounded-lg bg-oracle-blue/10 border border-oracle-blue/20 hover:bg-oracle-blue/20 transition-colors uppercase tracking-widest">
                         Show More
-                      </button>
+                      </a>
                     </div>
                   </div>
                 </div>

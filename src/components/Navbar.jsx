@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Cpu, Menu, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -25,12 +26,28 @@ const Navbar = () => {
   }, [mobileMenuOpen]);
 
   const navLinks = [
-    { name: 'Features', href: '/#features' },
-    { name: 'API', href: '/#api' },
-    { name: 'Pricing', href: '/#pricing' },
-    { name: 'Guidelines', href: '/#guidelines' },
-    { name: 'Contact', href: '/#contact' },
+    { name: 'Features', id: 'features' },
+    { name: 'API', id: 'api' },
+    { name: 'Pricing', id: 'pricing' },
+    { name: 'Guidelines', id: 'guidelines' },
+    { name: 'Contact', id: 'contact' },
   ];
+
+  const scrollToSection = (e, id) => {
+    e.preventDefault();
+    setMobileMenuOpen(false);
+    
+    if (window.location.pathname === '/') {
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+        // Update URL without reload
+        window.history.pushState(null, null, `#${id}`);
+      }
+    } else {
+      navigate(`/#${id}`);
+    }
+  };
 
   return (
     <nav 
@@ -55,7 +72,8 @@ const Navbar = () => {
           {navLinks.map((link, idx) => (
             <motion.a
               key={link.name}
-              href={link.href}
+              href={`#${link.id}`}
+              onClick={(e) => scrollToSection(e, link.id)}
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
@@ -66,7 +84,8 @@ const Navbar = () => {
             </motion.a>
           ))}
           <motion.a
-            href="/#pricing"
+            href="#pricing"
+            onClick={(e) => scrollToSection(e, 'pricing')}
             whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(0,186,255,0.4)" }}
             whileTap={{ scale: 0.95 }}
             className="px-6 py-2.5 rounded-xl bg-oracle-blue text-black text-xs font-black uppercase tracking-widest"
@@ -87,62 +106,74 @@ const Navbar = () => {
       {/* Mobile Menu - Full Screen Overlay */}
       <AnimatePresence>
         {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-[200] bg-black md:hidden flex flex-col"
-          >
-            {/* Mobile Menu Header */}
-            <div className="flex justify-between items-center px-6 py-6 border-b border-white/10">
-              <Link to="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-xl bg-oracle-blue/10 flex items-center justify-center border border-oracle-blue/20">
-                  <Cpu className="text-oracle-blue w-6 h-6" />
-                </div>
-                <span className="text-xl font-bold tracking-tighter text-white">
-                  ORACLE <span className="text-oracle-blue">ENDPOINT</span>
-                </span>
-              </Link>
-              <button 
-                className="w-10 h-10 glass rounded-lg flex items-center justify-center text-white" 
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <X size={20} />
-              </button>
-            </div>
+          <>
+            {/* Dark overlay background */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[199] bg-black md:hidden"
+              onClick={() => setMobileMenuOpen(false)}
+            />
             
-            {/* Mobile Menu Links */}
-            <div className="flex flex-col items-center justify-center flex-1 p-8 gap-8">
+            {/* Menu content */}
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 z-[200] bg-[#0a0a0a] md:hidden flex flex-col"
+            >
+              {/* Mobile Menu Header */}
+              <div className="flex justify-between items-center px-6 py-6 border-b border-white/10 bg-black">
+                <Link to="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2">
+                  <div className="w-10 h-10 rounded-xl bg-oracle-blue/10 flex items-center justify-center border border-oracle-blue/20">
+                    <Cpu className="text-oracle-blue w-6 h-6" />
+                  </div>
+                  <span className="text-xl font-bold tracking-tighter text-white">
+                    ORACLE <span className="text-oracle-blue">ENDPOINT</span>
+                  </span>
+                </Link>
+                <button 
+                  className="w-10 h-10 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center text-white" 
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              
+              {/* Mobile Menu Links */}
+              <div className="flex flex-col items-center justify-center flex-1 p-8 gap-6 bg-[#0a0a0a]">
               {navLinks.map((link, idx) => (
                 <motion.a
                   key={link.name}
-                  href={link.href}
+                  href={`#${link.id}`}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 + idx * 0.1 }}
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={(e) => scrollToSection(e, link.id)}
                   className="text-4xl font-black text-white hover:text-oracle-blue transition-colors uppercase tracking-tighter"
                 >
                   {link.name}
                 </motion.a>
               ))}
               <motion.a 
-                href="/#pricing"
+                href="#pricing"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
-                onClick={() => setMobileMenuOpen(false)}
-                className="mt-8 px-12 py-5 rounded-2xl bg-oracle-blue text-black font-black text-xl shadow-[0_0_40px_rgba(0,186,255,0.3)] uppercase tracking-widest"
+                onClick={(e) => scrollToSection(e, 'pricing')}
+                className="mt-8 px-12 py-5 rounded-2xl bg-oracle-blue text-black font-black text-xl shadow-[0_0_40px_rgba(0,186,255,0.3)] uppercase tracking-widest text-center"
               >
                 Get Started
               </motion.a>
               
-              <div className="absolute bottom-12 text-zinc-600 text-[10px] font-black uppercase tracking-[0.5em]">
-                Secure Protocol Active
+                <div className="absolute bottom-12 text-zinc-600 text-[10px] font-black uppercase tracking-[0.5em]">
+                  Secure Protocol Active
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </nav>

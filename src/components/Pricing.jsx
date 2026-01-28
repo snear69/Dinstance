@@ -94,8 +94,8 @@ const Pricing = ({ onFulfillment }) => {
               <div className="mb-10 text-white">
                 <h3 className="text-xl md:text-3xl font-black mb-4 tracking-tight">{plan.name}</h3>
                 <div className="flex items-baseline gap-2 mb-2">
-                  <span className="text-5xl font-black">${plan.priceUSD}</span>
-                  <span className="text-zinc-600 font-bold uppercase text-[10px] tracking-widest">Permanent</span>
+                  <span className="text-4xl md:text-5xl font-black">${plan.priceUSD}</span>
+                  <span className="text-zinc-600 font-bold uppercase text-[9px] sm:text-[10px] tracking-widest">One-Off Lifetime</span>
                 </div>
                 <p className="text-zinc-500 text-sm leading-relaxed min-h-[40px]">
                   {plan.description}
@@ -130,11 +130,62 @@ const Pricing = ({ onFulfillment }) => {
           ))}
         </div>
 
+        {/* Delivery Guarantee Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-20 max-w-5xl mx-auto"
+        >
+          <div className="grid md:grid-cols-2 gap-8 items-center p-8 md:p-12 rounded-[2.5rem] bg-linear-to-br from-white/5 to-transparent border border-white/10">
+            <div>
+              <h4 className="text-2xl md:text-3xl font-black mb-6 text-white uppercase tracking-tighter">Instant Delivery Protocol</h4>
+              <p className="text-zinc-500 mb-8 leading-relaxed">Upon successful transaction, our automated provisioning system immediately generates and transmits your unique deployment package.</p>
+              
+              <div className="space-y-4">
+                {[
+                  "Unique API Master Token (AES-256 Encrypted)",
+                  "Official SLA Certificate of Ownership",
+                  "SDK Integration Bundle (.ZIP Package)",
+                  "Private Endpoint Documentation Access",
+                  "Verified Deployment Receipt & Hash"
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="w-5 h-5 rounded-full bg-oracle-blue/20 flex items-center justify-center">
+                      <Check size={12} className="text-oracle-blue" />
+                    </div>
+                    <span className="text-xs font-bold text-zinc-400 uppercase tracking-wide">{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="relative group">
+              <div className="absolute inset-0 bg-oracle-blue/20 blur-[80px] rounded-full group-hover:bg-oracle-blue/30 transition-all"></div>
+              <div className="relative bg-zinc-950 p-6 rounded-3xl border border-white/10 shadow-2xl">
+                <div className="flex items-center gap-3 mb-6 border-b border-white/5 pb-4">
+                  <div className="w-10 h-10 rounded-xl bg-oracle-blue/10 flex items-center justify-center">
+                    <Download className="text-oracle-blue" size={20} />
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-zinc-500 uppercase font-black tracking-widest leading-none mb-1">Package Ready</p>
+                    <p className="text-xs text-white font-mono">oracle_bundle_v4.zip</p>
+                  </div>
+                </div>
+                <div className="space-y-3 opacity-50">
+                  <div className="h-2 bg-white/5 rounded-full w-full"></div>
+                  <div className="h-2 bg-white/5 rounded-full w-3/4"></div>
+                  <div className="h-2 bg-white/5 rounded-full w-5/6"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
         {/* Global SLA notice */}
         <motion.div 
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          className="mt-24 p-8 glass rounded-3xl border-white/5 max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-8 text-center md:text-left text-white"
+          className="mt-12 p-8 glass rounded-3xl border-white/5 max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-8 text-center md:text-left text-white"
         >
           <div className="w-16 h-16 rounded-2xl bg-oracle-blue/10 flex items-center justify-center text-oracle-blue shrink-0">
             <Shield size={32} />
