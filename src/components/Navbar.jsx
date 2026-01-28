@@ -91,7 +91,7 @@ const Navbar = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-[200] bg-oracle-dark/98 backdrop-blur-xl md:hidden flex flex-col"
+            className="fixed inset-0 z-[200] bg-black md:hidden flex flex-col"
           >
             {/* Mobile Menu Header */}
             <div className="flex justify-between items-center px-6 py-6 border-b border-white/10">
