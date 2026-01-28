@@ -1,150 +1,216 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Github, Linkedin, Cpu, Twitter, Youtube, Facebook, Send, CheckCircle, Loader2 } from 'lucide-react';
+import { Mail, Cpu, Send, CheckCircle, Loader2, Phone, Globe, ExternalLink } from 'lucide-react';
 
 const Footer = () => {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
-  const [status, setStatus] = useState('idle'); // idle, sending, success, error
+  const [status, setStatus] = useState('idle');
 
-  const socialLinks = [
-    { icon: Twitter, href: 'https://twitter.com/Oracle', label: 'Twitter' },
-    { icon: Linkedin, href: 'https://www.linkedin.com/company/oracle', label: 'LinkedIn' },
-    { icon: Youtube, href: 'https://www.youtube.com/oracle', label: 'YouTube' },
-    { icon: Facebook, href: 'https://www.facebook.com/Oracle', label: 'Facebook' },
-    { icon: Github, href: 'https://github.com/oracle', label: 'GitHub' },
-  ];
+  const footerLinks = {
+    "Resources For": [
+      { name: "Careers", href: "https://www.oracle.com/careers/" },
+      { name: "Developers", href: "https://developer.oracle.com/" },
+      { name: "Investors", href: "https://investor.oracle.com/" },
+      { name: "Partners", href: "https://www.oracle.com/partner/" },
+      { name: "Researchers", href: "https://labs.oracle.com/" },
+      { name: "Students and Educators", href: "https://academy.oracle.com/" },
+    ],
+    "Why Oracle": [
+      { name: "Analyst Reports", href: "https://www.oracle.com/corporate/analyst-reports/" },
+      { name: "Best Cloud-based ERP", href: "https://www.oracle.com/erp/" },
+      { name: "Cloud Economics", href: "https://www.oracle.com/cloud/economics/" },
+      { name: "Social Impact", href: "https://www.oracle.com/social-impact/" },
+      { name: "Security Practices", href: "https://www.oracle.com/security/" },
+    ],
+    "Learn": [
+      { name: "What is a Sovereign Cloud?", href: "https://www.oracle.com/cloud/sovereign-cloud/what-is-sovereign-cloud/" },
+      { name: "What is Zero Trust Security?", href: "https://www.oracle.com/security/what-is-zero-trust/" },
+      { name: "How AI is Transforming Finance", href: "https://www.oracle.com/artificial-intelligence/ai-in-finance/" },
+      { name: "What is a Vector Database?", href: "https://www.oracle.com/database/vector-database/" },
+      { name: "What is Multicloud?", href: "https://www.oracle.com/cloud/multicloud/" },
+      { name: "What are AI Agents?", href: "https://www.oracle.com/artificial-intelligence/ai-agents/" },
+    ],
+    "News and Events": [
+      { name: "News", href: "https://www.oracle.com/news/" },
+      { name: "Oracle AI World", href: "https://www.oracle.com/cloudworld/" },
+      { name: "Oracle Health Summit", href: "https://www.oracle.com/health/summit/" },
+      { name: "JavaOne", href: "https://www.oracle.com/javaone/" },
+      { name: "Search All Events", href: "https://www.oracle.com/events/" },
+    ],
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     if (!formData.name || !formData.email || !formData.message) {
       alert('Please fill in all fields');
       return;
     }
-
     setStatus('sending');
-
-    // Using Web3Forms - a free form submission service
-    try {
-      const response = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          access_key: 'YOUR_WEB3FORMS_KEY', // User needs to get their own key from web3forms.com
-          subject: `Oracle Endpoint Contact: ${formData.name}`,
-          from_name: formData.name,
-          email: formData.email,
-          message: formData.message,
-          to: 'support@oracle-endpoint.dev' // Replace with actual support email
-        }),
-      });
-
-      if (response.ok) {
-        setStatus('success');
-        setFormData({ name: '', email: '', message: '' });
-        setTimeout(() => setStatus('idle'), 3000);
-      } else {
-        setStatus('error');
-      }
-    } catch (error) {
-      // Fallback: Open email client
-      const mailtoLink = `mailto:support@oracle-endpoint.dev?subject=Oracle Endpoint Inquiry from ${formData.name}&body=${encodeURIComponent(formData.message)}%0A%0AFrom: ${formData.email}`;
-      window.location.href = mailtoLink;
-      setStatus('success');
-      setTimeout(() => setStatus('idle'), 3000);
-    }
+    
+    // Fallback to mailto
+    const mailtoLink = `mailto:support@oracle-endpoint.dev?subject=Oracle Endpoint Inquiry from ${formData.name}&body=${encodeURIComponent(formData.message)}%0A%0AFrom: ${formData.email}`;
+    window.location.href = mailtoLink;
+    setStatus('success');
+    setFormData({ name: '', email: '', message: '' });
+    setTimeout(() => setStatus('idle'), 3000);
   };
 
   return (
-    <footer id="contact" className="pt-24 pb-12 border-t border-white/5 relative overflow-hidden">
+    <footer id="contact" className="pt-20 border-t border-white/5 relative overflow-hidden bg-black/30">
       <div className="container mx-auto px-6">
-        <div className="grid md:grid-cols-2 gap-16 mb-20">
-          <div>
-            <h2 className="text-4xl font-bold mb-6">Let's build the future <br /> of infrastructure.</h2>
-            <p className="text-zinc-500 mb-8 max-w-sm">
-              Ready to skip the server setup? Get in touch or start your integration today.
-            </p>
-            <div className="flex gap-3 flex-wrap mb-8">
-              {socialLinks.map((social, idx) => (
-                <a 
-                  key={idx}
-                  href={social.href} 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={social.label}
-                  className="w-12 h-12 rounded-full glass flex items-center justify-center hover:text-oracle-blue hover:border-oracle-blue/50 transition-colors"
-                >
-                  <social.icon size={20} />
-                </a>
-              ))}
+        
+        {/* Main Footer Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 pb-16">
+          {Object.entries(footerLinks).map(([category, links]) => (
+            <div key={category}>
+              <h4 className="text-white font-bold text-sm mb-4">{category}</h4>
+              <ul className="space-y-2">
+                {links.map((link) => (
+                  <li key={link.name}>
+                    <a 
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-zinc-500 text-sm hover:text-oracle-blue transition-colors flex items-center gap-1 group"
+                    >
+                      {link.name}
+                      <ExternalLink size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+
+          {/* Contact Column */}
+          <div className="col-span-2 md:col-span-4 lg:col-span-1">
+            <h4 className="text-white font-bold text-sm mb-4">Contact Us</h4>
+            <div className="space-y-3 text-sm">
+              <a href="tel:+34916036188" className="flex items-center gap-2 text-zinc-500 hover:text-oracle-blue transition-colors">
+                <Phone size={14} />
+                <span>ES Sales: +34 91 603 6188</span>
+              </a>
+              <a href="tel:+18006330738" className="flex items-center gap-2 text-zinc-500 hover:text-oracle-blue transition-colors">
+                <Phone size={14} />
+                <span>US Sales: +1.800.633.0738</span>
+              </a>
+              <a href="https://www.oracle.com/corporate/contact/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-zinc-500 hover:text-oracle-blue transition-colors">
+                <Globe size={14} />
+                <span>How can we help?</span>
+              </a>
+              <a href="https://go.oracle.com/subscriptions" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-zinc-500 hover:text-oracle-blue transition-colors">
+                <Mail size={14} />
+                <span>Subscribe to emails</span>
+              </a>
             </div>
             
-            {/* Direct contact info */}
-            <div className="space-y-2 text-sm text-zinc-500">
-              <p><Mail size={14} className="inline mr-2" />support@oracle-endpoint.dev</p>
+            <div className="mt-6 pt-4 border-t border-white/5 space-y-2">
+              <a href="https://secure.ethicspoint.com/domain/media/en/gui/31053/index.html" target="_blank" rel="noopener noreferrer" className="text-zinc-600 text-xs hover:text-zinc-400 transition-colors block">
+                Integrity Helpline
+              </a>
+              <a href="https://www.oracle.com/corporate/accessibility/" target="_blank" rel="noopener noreferrer" className="text-zinc-600 text-xs hover:text-zinc-400 transition-colors block">
+                Accessibility
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Contact Form Section */}
+        <div className="grid md:grid-cols-2 gap-12 py-16 border-t border-white/5">
+          <div>
+            <h2 className="text-3xl font-bold mb-4">Let's build the future of infrastructure.</h2>
+            <p className="text-zinc-500 mb-6 max-w-sm">
+              Ready to skip the server setup? Get in touch or start your integration today.
+            </p>
+            
+            {/* Social Links */}
+            <div className="flex gap-4">
+              <a href="https://twitter.com/Oracle" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-oracle-blue/20 transition-colors text-zinc-400 hover:text-oracle-blue">
+                <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              </a>
+              <a href="https://www.linkedin.com/company/oracle" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-oracle-blue/20 transition-colors text-zinc-400 hover:text-oracle-blue">
+                <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              </a>
+              <a href="https://www.facebook.com/Oracle" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-oracle-blue/20 transition-colors text-zinc-400 hover:text-oracle-blue">
+                <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+              </a>
+              <a href="https://www.youtube.com/oracle" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-oracle-blue/20 transition-colors text-zinc-400 hover:text-oracle-blue">
+                <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+              </a>
+              <a href="https://github.com/oracle" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-oracle-blue/20 transition-colors text-zinc-400 hover:text-oracle-blue">
+                <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+              </a>
             </div>
           </div>
 
-          <div className="glass p-8 rounded-3xl border-white/10">
+          <div className="glass p-6 rounded-2xl border-white/10">
             <h3 className="text-lg font-bold mb-4">Send us a message</h3>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
                 <input 
                   type="text" 
                   placeholder="Name" 
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-oracle-blue transition-colors" 
+                  className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-oracle-blue transition-colors text-sm" 
                 />
                 <input 
                   type="email" 
                   placeholder="Email" 
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-oracle-blue transition-colors" 
+                  className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-oracle-blue transition-colors text-sm" 
                 />
               </div>
               <textarea 
                 placeholder="Your message..." 
-                rows={4} 
+                rows={3} 
                 value={formData.message}
                 onChange={(e) => setFormData({...formData, message: e.target.value})}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-oracle-blue transition-colors resize-none"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-oracle-blue transition-colors resize-none text-sm"
               ></textarea>
               <button 
                 type="submit"
                 disabled={status === 'sending'}
-                className="w-full py-4 bg-oracle-blue text-black font-bold rounded-xl hover:bg-white transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full py-3 bg-oracle-blue text-black font-bold rounded-xl hover:bg-white transition-colors flex items-center justify-center gap-2 disabled:opacity-50 text-sm"
               >
-                {status === 'sending' && <Loader2 size={18} className="animate-spin" />}
-                {status === 'success' && <CheckCircle size={18} />}
-                {status === 'idle' && <Send size={18} />}
-                {status === 'sending' ? 'Sending...' : status === 'success' ? 'Message Sent!' : 'Send Message'}
+                {status === 'sending' && <Loader2 size={16} className="animate-spin" />}
+                {status === 'success' && <CheckCircle size={16} />}
+                {status === 'idle' && <Send size={16} />}
+                {status === 'sending' ? 'Sending...' : status === 'success' ? 'Sent!' : 'Send Message'}
               </button>
             </form>
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row justify-between items-center pt-12 border-t border-white/5">
-          <div className="flex items-center gap-2 mb-4 md:mb-0">
-            <Cpu className="text-oracle-blue w-6 h-6" />
-            <span className="text-lg font-bold tracking-tighter">ORACLE ENDPOINT</span>
-          </div>
-          <p className="text-zinc-600 text-sm">
-            © 2023 Oracle Endpoint. All rights reserved.
-          </p>
-          <div className="flex gap-6 mt-4 md:mt-0 text-zinc-500 text-sm">
-            <a href="/docs" className="hover:text-white transition-colors">Docs</a>
-            <a href="/terms" className="hover:text-white transition-colors">Terms</a>
-            <a href="/privacy" className="hover:text-white transition-colors">Privacy</a>
+        {/* Bottom Bar */}
+        <div className="py-8 border-t border-white/5">
+          <div className="flex flex-col lg:flex-row justify-between items-center gap-6">
+            <div className="flex items-center gap-3">
+              <Cpu className="text-oracle-blue w-6 h-6" />
+              <span className="text-lg font-bold tracking-tighter">ORACLE ENDPOINT</span>
+            </div>
+            
+            <div className="flex flex-wrap justify-center gap-4 text-xs text-zinc-600">
+              <a href="https://www.oracle.com/legal/copyright.html" target="_blank" rel="noopener noreferrer" className="hover:text-zinc-400 transition-colors">© 2023 Oracle</a>
+              <a href="https://www.oracle.com/legal/privacy/" target="_blank" rel="noopener noreferrer" className="hover:text-zinc-400 transition-colors">Privacy</a>
+              <a href="https://www.oracle.com/legal/privacy/privacy-choices.html" target="_blank" rel="noopener noreferrer" className="hover:text-zinc-400 transition-colors">Do Not Sell My Info</a>
+              <a href="https://www.oracle.com/legal/privacy/advertising-privacy-policy.html" target="_blank" rel="noopener noreferrer" className="hover:text-zinc-400 transition-colors">Ad Choices</a>
+              <a href="https://www.oracle.com/sitemap.html" target="_blank" rel="noopener noreferrer" className="hover:text-zinc-400 transition-colors">Site Map</a>
+            </div>
+
+            <div className="flex gap-4 text-zinc-500 text-sm">
+              <a href="/docs" className="hover:text-white transition-colors">Docs</a>
+              <a href="/terms" className="hover:text-white transition-colors">Terms</a>
+              <a href="/privacy" className="hover:text-white transition-colors">Privacy</a>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Background glow decorator */}
-      <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-oracle-purple/10 blur-[120px] rounded-full"></div>
+      {/* Background decorations */}
+      <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-oracle-purple/5 blur-[120px] rounded-full"></div>
+      <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-oracle-blue/5 blur-[120px] rounded-full"></div>
     </footer>
   );
 };
