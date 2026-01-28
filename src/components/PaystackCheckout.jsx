@@ -7,11 +7,13 @@ const PaystackCheckout = ({ amount, planName, popular, onSuccess: onFulfillment 
   const [showEmailInput, setShowEmailInput] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  const publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_test_ov1v1ov1v1ov1v1ov1v1ov1v1ov1v1ov';
+
   const config = {
     reference: (new Date()).getTime().toString(),
     email: email || "customer@example.com",
-    amount: amount * 100, // Amount in kobo
-    publicKey: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
+    amount: Math.round(amount * 100), // Amount in kobo
+    publicKey: publicKey,
     currency: 'NGN',
     metadata: {
       plan: planName
@@ -39,12 +41,27 @@ const PaystackCheckout = ({ amount, planName, popular, onSuccess: onFulfillment 
       setShowEmailInput(true);
       return;
     }
-    if (!email || !email.includes('@')) {
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
       alert('Please enter a valid email address');
       return;
     }
+
+    if (!import.meta.env.VITE_PAYSTACK_PUBLIC_KEY) {
+      alert('Error: Paystack Public Key is missing. Please add VITE_PAYSTACK_PUBLIC_KEY to your Environment Variables.');
+      setIsProcessing(false);
+      return;
+    }
+
     setIsProcessing(true);
-    initializePayment(handleSuccess, handleClose);
+    try {
+      initializePayment(handleSuccess, handleClose);
+    } catch (error) {
+      console.error("Paystack initialization failed", error);
+      alert("Payment initialization failed. check console for details.");
+      setIsProcessing(false);
+    }
   };
 
   if (showEmailInput) {
@@ -55,7 +72,7 @@ const PaystackCheckout = ({ amount, planName, popular, onSuccess: onFulfillment 
           placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm outline-none focus:border-oracle-blue transition-colors"
+          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm outline-none focus:border-oracle-blue transition-colors text-white"
         />
         <button 
           onClick={handleClick}
