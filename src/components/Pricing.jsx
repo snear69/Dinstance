@@ -139,6 +139,13 @@ const Pricing = ({ onFulfillment, cart, updateCart }) => {
                   onSuccess={(email) => onFulfillment && onFulfillment(plan.name, email)}
                 />
                 
+                <button 
+                  onClick={() => onFulfillment && onFulfillment(plan.name, "simulated@dev.test")}
+                  className="w-full mt-2 text-[9px] text-zinc-800 hover:text-oracle-blue transition-colors uppercase font-bold tracking-widest"
+                >
+                  Simulate Delivery (Test)
+                </button>
+                
                 <p className="text-center text-[9px] font-black uppercase tracking-tighter text-zinc-700 mt-4 leading-none">
                   Encrypted Transaction Protocol Enabled
                 </p>

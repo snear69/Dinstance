@@ -153,9 +153,7 @@ oracle.setScaling({
   );
 };
 
-const DeliveryModal = ({ isOpen, onClose, planName, email }) => {
-  if (!isOpen) return null;
-
+const DeliveryModal = ({ onClose, planName, email }) => {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
       <motion.div 

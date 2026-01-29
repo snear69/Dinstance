@@ -113,12 +113,16 @@ function App() {
 
         <Footer />
         
-        <DeliveryModal 
-          isOpen={deliveryData.isOpen} 
-          onClose={() => setDeliveryData({ ...deliveryData, isOpen: false })}
-          planName={deliveryData.planName}
-          email={deliveryData.email}
-        />
+        <AnimatePresence>
+          {deliveryData.isOpen && (
+            <DeliveryModal 
+              isOpen={deliveryData.isOpen} 
+              onClose={() => setDeliveryData({ ...deliveryData, isOpen: false })}
+              planName={deliveryData.planName}
+              email={deliveryData.email}
+            />
+          )}
+        </AnimatePresence>
       </div>
     </BrowserRouter>
   );
