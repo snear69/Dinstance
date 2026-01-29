@@ -47,14 +47,30 @@ const HomePage = ({ onFulfillment, cart, updateCart }) => (
 function App() {
   const [deliveryData, setDeliveryData] = useState({ isOpen: false, planName: '', email: '' });
   const [cart, setCart] = useState(() => {
-    const savedCart = localStorage.getItem('oracle_cart');
-    return savedCart ? JSON.parse(savedCart) : { planName: '', email: '' };
+    try {
+      const savedCart = localStorage.getItem('oracle_cart');
+      return savedCart ? JSON.parse(savedCart) : { planName: '', email: '' };
+    } catch {
+      return { planName: '', email: '' };
+    }
   });
+
+  const updateCart = (data) => {
+    setCart(prev => ({ ...prev, ...data }));
+  };
+
+  const handleFulfillment = (planName, email) => {
+    console.log('APP_DEBUG: Fulfillment triggered for', email);
+    setDeliveryData({ isOpen: true, planName, email });
+    setCart({ planName: '', email: '' }); // Clear cart on success
+    localStorage.removeItem('oracle_cart');
+  };
 
   useEffect(() => {
     localStorage.setItem('oracle_cart', JSON.stringify(cart));
   }, [cart]);
 
+  // Rest of useEffects...
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.2,
@@ -79,21 +95,11 @@ function App() {
     };
   }, []);
 
-  const handleFulfillment = (planName, email) => {
-    setDeliveryData({ isOpen: true, planName, email });
-    setCart({ planName: '', email: '' }); // Clear cart on success
-  };
-
-  const updateCart = (data) => {
-    setCart(prev => ({ ...prev, ...data }));
-  };
-
   return (
     <BrowserRouter>
       <ScrollToTop />
       <LoadingScreen />
       
-      {/* Removed overflow-hidden to prevent black screen if loader hangs */}
       <div className="relative min-h-screen bg-oracle-dark">
         <Scene />
         <Navbar cart={cart} />

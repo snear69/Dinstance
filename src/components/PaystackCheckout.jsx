@@ -4,9 +4,20 @@ import { ArrowRight, Loader2 } from 'lucide-react';
 
 const PaystackCheckout = ({ amount, planName, popular, promo, cart, updateCart, onSuccess: onFulfillment }) => {
   const isThisPlanSelected = cart?.planName === planName;
-  const [email, setEmail] = useState(isThisPlanSelected ? cart.email || '' : '');
-  const [showEmailInput, setShowEmailInput] = useState(isThisPlanSelected);
+  const [email, setEmail] = useState('');
+  const [showEmailInput, setShowEmailInput] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Keep local state in sync with global cart
+  React.useEffect(() => {
+    if (isThisPlanSelected) {
+      setEmail(cart.email || '');
+      setShowEmailInput(true);
+    } else {
+      setShowEmailInput(false);
+      setEmail('');
+    }
+  }, [isThisPlanSelected, cart.email, planName]);
 
   // IMPORTANT: Never hardcode Paystack keys in the frontend bundle.
   // Set `VITE_PAYSTACK_PUBLIC_KEY` in your environment (see .env.example).
