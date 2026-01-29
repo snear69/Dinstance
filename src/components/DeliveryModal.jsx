@@ -123,7 +123,27 @@ oracle.setScaling({
           <Download size={16} /> DOWNLOAD PACK (.ZIP)
         </button>
         <button 
-          onClick={() => alert(`A secure link has been sent to ${email}`)}
+          onClick={async () => {
+            alert(`Re-sending documentation bundle to ${email}...`);
+            const backendUrl = import.meta.env.VITE_BACKEND_URL;
+            if (backendUrl) {
+              try {
+                await fetch(`${backendUrl}/api/webhook/paystack`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ 
+                    event: 'charge.success', 
+                    data: { customer: { email }, metadata: { plan: planName } } 
+                  })
+                });
+                alert("Success! Check your inbox.");
+              } catch {
+                alert("Fulfillment server is busy. Your documentation is still available for manual download below.");
+              }
+            } else {
+              alert("Fulfillment server not configured. Please use manual download.");
+            }
+          }}
           className="flex-1 py-3 glass text-white text-xs font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-white/10 transition-colors"
         >
           RESEND TO {email.toUpperCase()}

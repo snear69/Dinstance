@@ -107,9 +107,9 @@ const Navbar = ({ cart }) => {
             onClick={(e) => scrollToSection(e, 'pricing')}
             whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(0,186,255,0.4)" }}
             whileTap={{ scale: 0.95 }}
-            className="px-6 py-2.5 rounded-xl bg-oracle-blue text-black text-xs font-black uppercase tracking-widest"
+            className="px-6 py-2.5 rounded-xl bg-oracle-blue text-black text-xs font-black uppercase tracking-widest text-center"
           >
-            {cart?.planName ? 'Change Plan' : 'Get Started'}
+            {cart?.planName ? 'Complete Purchase' : 'Get Started'}
           </motion.a>
         </div>
 
