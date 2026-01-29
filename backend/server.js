@@ -41,7 +41,8 @@ app.post('/api/webhook/paystack', async (req, res) => {
     const { amount, metadata } = event.data;
     const planName = metadata?.plan || 'Starter';
 
-    console.log(`Payment confirmed for ${email}: ${planName}`);
+    console.log(`[PAYSTACK WEBHOOK] Success event received for: ${email}`);
+    console.log(`[PAYSTACK WEBHOOK] Plan: ${planName}, Amount: ${amount}`);
 
     try {
       // Send Fulfillment Email

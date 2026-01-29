@@ -156,13 +156,19 @@ const DeliveryModal = ({ isOpen, onClose, planName, email }) => {
           <div>
             <div className="flex items-center gap-2 text-oracle-blue mb-2">
               <CheckCircle size={24} />
-              <span className="font-black tracking-tighter text-xl italic uppercase">Deployment Success</span>
+              <span className="font-black tracking-tighter text-xl italic uppercase">Thank You for your Purchase</span>
             </div>
-            <p className="text-zinc-500 text-xs">Provisioning complete for {email}</p>
+            <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest">Deployment Package & Instructions Sent to: <span className="text-white">{email}</span></p>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full transition-colors text-zinc-500">
             <X size={24} />
           </button>
+        </div>
+
+        {/* Highlighted Instruction Note */}
+        <div className="px-8 py-3 bg-emerald-500/10 border-b border-white/5 flex items-center gap-3">
+          <Zap size={14} className="text-emerald-500" />
+          <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Action Required: Check your inbox (and spam) for setup documentation</p>
         </div>
 
         <DocumentationPackage planName={planName} email={email} />

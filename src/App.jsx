@@ -28,7 +28,7 @@ const ScrollToTop = () => {
   return null;
 };
 
-const HomePage = ({ onFulfillment }) => (
+const HomePage = ({ onFulfillment, cart, updateCart }) => (
   <main className="relative z-10">
     <Hero />
     <Stats />
@@ -37,7 +37,7 @@ const HomePage = ({ onFulfillment }) => (
     <HowItWorks />
     <Integration />
     <Testimonials />
-    <Pricing onFulfillment={onFulfillment} />
+    <Pricing onFulfillment={onFulfillment} cart={cart} updateCart={updateCart} />
     <FAQ />
     <CTA />
     <Guidelines />
