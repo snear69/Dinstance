@@ -132,7 +132,8 @@ const Pricing = ({ onFulfillment }) => {
                 <PaystackCheckout 
                   amount={plan.priceNGN} 
                   planName={plan.name} 
-                  popular={plan.popular} 
+                  popular={plan.popular}
+                  promo={plan.promo}
                   onSuccess={(email) => onFulfillment && onFulfillment(plan.name, email)}
                 />
                 

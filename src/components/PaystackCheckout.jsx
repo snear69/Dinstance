@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { usePaystackPayment } from 'react-paystack';
 import { ArrowRight, Loader2 } from 'lucide-react';
 
-const PaystackCheckout = ({ amount, planName, popular, onSuccess: onFulfillment }) => {
+const PaystackCheckout = ({ amount, planName, popular, promo, onSuccess: onFulfillment }) => {
   const [email, setEmail] = useState('');
   const [showEmailInput, setShowEmailInput] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -78,7 +78,7 @@ const PaystackCheckout = ({ amount, planName, popular, onSuccess: onFulfillment 
         <button 
           onClick={handleClick}
           disabled={isProcessing}
-          className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${popular ? 'bg-oracle-blue text-black hover:bg-white' : 'bg-white/5 text-white hover:bg-white/10'}`}
+          className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${popular ? 'bg-oracle-blue text-black hover:bg-white' : promo ? 'bg-emerald-500 text-black hover:bg-emerald-400' : 'bg-white/5 text-white hover:bg-white/10'}`}
         >
           {isProcessing ? (
             <>
@@ -98,7 +98,7 @@ const PaystackCheckout = ({ amount, planName, popular, onSuccess: onFulfillment 
     <button 
       onClick={handleClick}
       disabled={!hasPublicKey}
-      className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${popular ? 'bg-oracle-blue text-black hover:bg-white' : 'bg-white/5 text-white hover:bg-white/10'}`}
+      className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${popular ? 'bg-oracle-blue text-black hover:bg-white' : promo ? 'bg-emerald-500 text-black hover:bg-emerald-400' : 'bg-white/5 text-white hover:bg-white/10'}`}
     >
       Get Started <ArrowRight size={18} />
     </button>
