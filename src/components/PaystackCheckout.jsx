@@ -11,6 +11,7 @@ const PaystackCheckout = ({ amount, planName, popular, promo, cart, updateCart, 
   // IMPORTANT: Never hardcode Paystack keys in the frontend bundle.
   // Set `VITE_PAYSTACK_PUBLIC_KEY` in your environment (see .env.example).
   const publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const hasPublicKey = Boolean(publicKey);
 
   const config = {
@@ -88,10 +89,23 @@ const PaystackCheckout = ({ amount, planName, popular, promo, cart, updateCart, 
           type="email"
           placeholder="Enter your email"
           value={email}
-          onChange={(e) => {
+          onChange={async (e) => {
             const val = e.target.value;
             setEmail(val);
             updateCart({ planName, email: val });
+            
+            // Sync with backend if it's a valid email
+            if (val.includes('@') && val.includes('.') && backendUrl) {
+              try {
+                await fetch(`${backendUrl}/api/cart`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ email: val, planName })
+                });
+              } catch {
+                console.warn("Backend sync failed - staying local");
+              }
+            }
           }}
           className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm outline-none focus:border-oracle-blue transition-colors text-white"
         />
