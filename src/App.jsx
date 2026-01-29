@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Lenis from '@studio-freight/lenis';
+
+// Context Providers
+import { AuthProvider } from './contexts/AuthContext';
+import { CartProvider } from './contexts/CartContext';
+
+// Components
 import Scene from './components/Scene';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -18,7 +24,14 @@ import Footer from './components/Footer';
 import DeliveryModal from './components/DeliveryModal';
 import LoadingScreen from './components/LoadingScreen';
 import Partners from './components/Partners';
+
+// Pages
 import { DocsPage, TermsPage, PrivacyPage } from './pages/Legal';
+import LoginPage from './pages/Auth/LoginPage';
+import SignupPage from './pages/Auth/SignupPage';
+import DashboardPage from './pages/Dashboard/DashboardPage';
+import AdminPage from './pages/Admin/AdminPage';
+import DownloadsPage from './pages/Downloads/DownloadsPage';
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -45,7 +58,22 @@ const HomePage = ({ onFulfillment, cart, updateCart }) => (
   </main>
 );
 
-function App() {
+// Layout wrapper for pages that need navbar/footer
+const MainLayout = ({ children }) => {
+  const location = useLocation();
+  const hideNavFooter = ['/login', '/signup', '/dashboard', '/downloads', '/oracle-admin'].includes(location.pathname);
+  
+  return (
+    <>
+      {!hideNavFooter && <Navbar />}
+      {children}
+      {!hideNavFooter && <Footer />}
+    </>
+  );
+};
+
+function AppContent() {
+  const navigate = useNavigate();
   const [deliveryData, setDeliveryData] = useState({ isOpen: false, planName: '', email: '' });
   const [cart, setCart] = useState(() => {
     try {
@@ -65,13 +93,17 @@ function App() {
     setDeliveryData({ isOpen: true, planName, email });
     setCart({ planName: '', email: '' }); // Clear cart on success
     localStorage.removeItem('oracle_cart');
+    
+    // Redirect to downloads page after a short delay for direct purchases
+    setTimeout(() => {
+      navigate('/downloads');
+    }, 3000);
   };
 
   useEffect(() => {
     localStorage.setItem('oracle_cart', JSON.stringify(cart));
   }, [cart]);
 
-  // Rest of useEffects...
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.2,
@@ -84,36 +116,37 @@ function App() {
     }
 
     requestAnimationFrame(raf);
-    
-    // Safety exit for loading screen - background timer
-    const timer = setTimeout(() => {
-      // Logic handled within LoadingScreen component
-    }, 3000);
 
     return () => {
       lenis.destroy();
-      clearTimeout(timer);
     };
   }, []);
 
+  const location = useLocation();
+  const isAdminPage = location.pathname === '/oracle-admin';
+
   return (
-    <BrowserRouter>
+    <>
       <ScrollToTop />
-      <LoadingScreen />
+      {!isAdminPage && <LoadingScreen />}
       
       <div className="relative min-h-screen bg-oracle-dark">
-        <Scene />
-        <Navbar cart={cart} />
+        {!isAdminPage && <Scene />}
         
-        <Routes>
-          <Route path="/" element={<HomePage onFulfillment={handleFulfillment} cart={cart} updateCart={updateCart} />} />
-          <Route path="/docs" element={<DocsPage />} />
-          <Route path="/terms" element={<TermsPage />} />
-          <Route path="/privacy" element={<PrivacyPage />} />
-        </Routes>
+        <MainLayout>
+          <Routes>
+            <Route path="/" element={<HomePage onFulfillment={handleFulfillment} cart={cart} updateCart={updateCart} />} />
+            <Route path="/docs" element={<DocsPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/downloads" element={<DownloadsPage />} />
+            <Route path="/oracle-admin" element={<AdminPage />} />
+          </Routes>
+        </MainLayout>
 
-        <Footer />
-        
         <AnimatePresence>
           {deliveryData.isOpen && (
             <DeliveryModal 
@@ -125,6 +158,18 @@ function App() {
           )}
         </AnimatePresence>
       </div>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <CartProvider>
+          <AppContent />
+        </CartProvider>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

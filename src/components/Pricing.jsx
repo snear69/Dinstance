@@ -1,8 +1,10 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Check, CreditCard, Wallet, Building2, Smartphone, Globe, Shield, Sparkles, Download } from 'lucide-react';
+import { Check, CreditCard, Wallet, Building2, Smartphone, Globe, Shield, Sparkles, Download, ShoppingCart, Loader2 } from 'lucide-react';
 import PaystackCheckout from './PaystackCheckout';
+import { useAuth } from '../contexts/AuthContext';
+import { useCart } from '../contexts/CartContext';
 
 const paymentMethods = [
   { name: 'Cards', icon: CreditCard },
@@ -51,6 +53,35 @@ const plans = [
 ];
 
 const Pricing = ({ onFulfillment, cart, updateCart }) => {
+  const navigate = useNavigate();
+  const { isAuthenticated, wallet } = useAuth();
+  const { addItem, items: cartItems } = useCart();
+  const [addingPlan, setAddingPlan] = useState(null);
+  const [addedPlan, setAddedPlan] = useState(null);
+
+  const handleAddToCart = async (plan) => {
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+
+    setAddingPlan(plan.name);
+    try {
+      await addItem(plan.name, plan.priceNGN, plan.priceUSD, plan.description);
+      setAddedPlan(plan.name);
+      setTimeout(() => setAddedPlan(null), 2000);
+    } catch (error) {
+      console.error('Failed to add to cart:', error);
+      alert(error.message);
+    } finally {
+      setAddingPlan(null);
+    }
+  };
+
+  const isInCart = (planName) => {
+    return cartItems.some(item => item.planName === planName);
+  };
+
   return (
     <section id="pricing" className="py-24 relative overflow-hidden">
       {/* Background decorations */}
@@ -81,6 +112,26 @@ const Pricing = ({ onFulfillment, cart, updateCart }) => {
               </motion.div>
             ))}
           </div>
+
+          {/* Wallet Balance Indicator */}
+          {isAuthenticated && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-8 inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-green-500/10 border border-green-500/30"
+            >
+              <Wallet className="text-green-400" size={20} />
+              <div className="text-left">
+                <p className="text-[10px] text-green-400/60 uppercase font-bold tracking-wider">Your Wallet Balance</p>
+                <p className="text-xl font-black text-green-400">
+                  ₦{wallet.balance.toLocaleString()}
+                </p>
+              </div>
+              <Link to="/dashboard" className="ml-4 px-4 py-2 bg-green-500/20 hover:bg-green-500/30 rounded-lg text-green-400 text-xs font-bold transition-all">
+                Top Up
+              </Link>
+            </motion.div>
+          )}
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto items-stretch">
@@ -128,23 +179,69 @@ const Pricing = ({ onFulfillment, cart, updateCart }) => {
                 ))}
               </div>
 
-              <div className="mt-auto">
-                <PaystackCheckout 
-                  amount={plan.priceNGN} 
-                  planName={plan.name} 
-                  popular={plan.popular}
-                  promo={plan.promo}
-                  cart={cart}
-                  updateCart={updateCart}
-                  onSuccess={(email) => onFulfillment && onFulfillment(plan.name, email)}
-                />
-                
-                <button 
-                  onClick={() => onFulfillment && onFulfillment(plan.name, "simulated@dev.test")}
-                  className="w-full mt-2 text-[9px] text-zinc-800 hover:text-oracle-blue transition-colors uppercase font-bold tracking-widest"
-                >
-                  Simulate Delivery (Test)
-                </button>
+              <div className="mt-auto space-y-3">
+                {/* Add to Cart Button (for authenticated users) */}
+                {isAuthenticated && (
+                  <motion.button
+                    onClick={() => handleAddToCart(plan)}
+                    disabled={addingPlan === plan.name || isInCart(plan.name)}
+                    whileHover={{ scale: isInCart(plan.name) ? 1 : 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={`w-full py-4 rounded-xl font-black uppercase tracking-wider text-sm flex items-center justify-center gap-2 transition-all ${
+                      isInCart(plan.name)
+                        ? 'bg-green-500/20 border border-green-500/30 text-green-400 cursor-default'
+                        : addedPlan === plan.name
+                          ? 'bg-green-500 text-white'
+                          : plan.popular
+                            ? 'bg-gradient-to-r from-oracle-blue to-blue-600 text-black shadow-lg shadow-oracle-blue/25'
+                            : plan.promo
+                              ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-black'
+                              : 'bg-zinc-800 border border-white/10 text-white hover:bg-zinc-700'
+                    }`}
+                  >
+                    {addingPlan === plan.name ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : isInCart(plan.name) ? (
+                      <>
+                        <Check size={18} />
+                        In Cart
+                      </>
+                    ) : addedPlan === plan.name ? (
+                      <>
+                        <Check size={18} />
+                        Added!
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingCart size={18} />
+                        Add to Cart
+                      </>
+                    )}
+                  </motion.button>
+                )}
+
+                {/* Pay Now Button (for non-authenticated or quick purchase) */}
+                {!isAuthenticated && (
+                  <PaystackCheckout 
+                    amount={plan.priceNGN} 
+                    planName={plan.name} 
+                    popular={plan.popular}
+                    promo={plan.promo}
+                    cart={cart}
+                    updateCart={updateCart}
+                    onSuccess={(email) => onFulfillment && onFulfillment(plan.name, email)}
+                  />
+                )}
+
+                {/* Login prompt for non-authenticated */}
+                {!isAuthenticated && (
+                  <Link
+                    to="/login"
+                    className="w-full py-3 border border-white/10 rounded-xl flex items-center justify-center gap-2 text-zinc-500 hover:text-white hover:border-white/20 transition-all text-xs font-bold uppercase tracking-wider"
+                  >
+                    Login to use Wallet
+                  </Link>
+                )}
                 
                 <p className="text-center text-[9px] font-black uppercase tracking-tighter text-zinc-700 mt-4 leading-none">
                   Encrypted Transaction Protocol Enabled
@@ -153,6 +250,23 @@ const Pricing = ({ onFulfillment, cart, updateCart }) => {
             </motion.div>
           ))}
         </div>
+
+        {/* Go to Cart Button */}
+        {isAuthenticated && cartItems.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-12 text-center"
+          >
+            <Link
+              to="/dashboard"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-oracle-blue to-blue-600 text-black font-black uppercase tracking-wider rounded-2xl shadow-lg shadow-oracle-blue/25 hover:shadow-oracle-blue/40 transition-all"
+            >
+              <ShoppingCart size={20} />
+              View Cart ({cartItems.length} items) - ₦{cartItems.reduce((s, i) => s + i.price, 0).toLocaleString()}
+            </Link>
+          </motion.div>
+        )}
 
         {/* Delivery Guarantee Section */}
         <motion.div 

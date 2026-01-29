@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Cpu, Menu, X, ShoppingCart } from 'lucide-react';
+import { Cpu, Menu, X, ShoppingCart, User, LogIn, Wallet } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { useCart } from '../contexts/CartContext';
 
 const Navbar = ({ cart }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { user, wallet, isAuthenticated } = useAuth();
+  const { itemCount } = useCart();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -41,12 +45,20 @@ const Navbar = ({ cart }) => {
       const element = document.getElementById(id);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
-        // Update URL without reload
         window.history.pushState(null, null, `#${id}`);
       }
     } else {
       navigate(`/#${id}`);
     }
+  };
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-NG', {
+      style: 'currency',
+      currency: 'NGN',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount);
   };
 
   return (
@@ -68,7 +80,7 @@ const Navbar = ({ cart }) => {
         </Link>
 
         {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex items-center gap-6">
           {navLinks.map((link, idx) => (
             <motion.a
               key={link.name}
@@ -84,33 +96,83 @@ const Navbar = ({ cart }) => {
             </motion.a>
           ))}
 
-          {/* Cart Indicator */}
-          {cart?.planName && (
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="flex items-center gap-3 px-4 py-2 rounded-xl bg-oracle-blue/20 border border-oracle-blue/50 text-[11px] font-black uppercase text-oracle-blue shadow-[0_0_20px_rgba(0,186,255,0.2)]"
-            >
-              <div className="relative">
-                <ShoppingCart size={16} />
-                <span className="absolute -top-1 -right-1 w-2 h-2 bg-white rounded-full animate-pulse shadow-lg"></span>
-              </div>
-              <div className="flex flex-col leading-none">
-                <span className="text-[8px] text-oracle-blue/60 mb-0.5">Current Order</span>
-                <span>{cart.planName} Tier</span>
-              </div>
-            </motion.div>
-          )}
+          {/* User is Authenticated */}
+          {isAuthenticated ? (
+            <>
+              {/* Wallet Balance */}
+              <Link
+                to="/dashboard"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-green-500/10 border border-green-500/30 text-green-400 hover:bg-green-500/20 transition-all"
+              >
+                <Wallet size={16} />
+                <span className="text-xs font-black">{formatCurrency(wallet.balance)}</span>
+              </Link>
 
-          <motion.a
-            href="#pricing"
-            onClick={(e) => scrollToSection(e, 'pricing')}
-            whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(0,186,255,0.4)" }}
-            whileTap={{ scale: 0.95 }}
-            className="px-6 py-2.5 rounded-xl bg-oracle-blue text-black text-xs font-black uppercase tracking-widest text-center"
-          >
-            {cart?.planName ? 'Complete Purchase' : 'Get Started'}
-          </motion.a>
+              {/* Cart Button */}
+              <Link
+                to="/dashboard"
+                className="relative p-2 rounded-xl bg-zinc-800/50 border border-white/10 text-zinc-400 hover:text-white hover:border-white/20 transition-all"
+              >
+                <ShoppingCart size={18} />
+                {itemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-oracle-blue text-black text-[10px] font-black rounded-full flex items-center justify-center">
+                    {itemCount}
+                  </span>
+                )}
+              </Link>
+
+              {/* Dashboard Link */}
+              <Link
+                to="/dashboard"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-oracle-blue/10 border border-oracle-blue/30 text-oracle-blue hover:bg-oracle-blue/20 transition-all"
+              >
+                <User size={16} />
+                <span className="text-xs font-black uppercase tracking-wide">
+                  {user?.name?.split(' ')[0] || 'Dashboard'}
+                </span>
+              </Link>
+            </>
+          ) : (
+            <>
+              {/* Cart Indicator (legacy) */}
+              {cart?.planName && (
+                <motion.div 
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="flex items-center gap-3 px-4 py-2 rounded-xl bg-oracle-blue/20 border border-oracle-blue/50 text-[11px] font-black uppercase text-oracle-blue shadow-[0_0_20px_rgba(0,186,255,0.2)]"
+                >
+                  <div className="relative">
+                    <ShoppingCart size={16} />
+                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-white rounded-full animate-pulse shadow-lg"></span>
+                  </div>
+                  <div className="flex flex-col leading-none">
+                    <span className="text-[8px] text-oracle-blue/60 mb-0.5">Current Order</span>
+                    <span>{cart.planName} Tier</span>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Login Button */}
+              <Link
+                to="/login"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-800/50 border border-white/10 text-zinc-400 hover:text-white hover:border-white/20 transition-all text-xs font-bold uppercase tracking-wider"
+              >
+                <LogIn size={16} />
+                Login
+              </Link>
+
+              {/* Get Started Button */}
+              <motion.a
+                href="#pricing"
+                onClick={(e) => scrollToSection(e, 'pricing')}
+                whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(0,186,255,0.4)" }}
+                whileTap={{ scale: 0.95 }}
+                className="px-6 py-2.5 rounded-xl bg-oracle-blue text-black text-xs font-black uppercase tracking-widest text-center"
+              >
+                Get Started
+              </motion.a>
+            </>
+          )}
         </div>
 
         {/* Mobile Toggle */}
@@ -164,29 +226,58 @@ const Navbar = ({ cart }) => {
             
             {/* Mobile Menu Links */}
             <div className="flex flex-col items-center justify-center flex-1 p-8 gap-6 bg-[#0a0a0a]">
-            {navLinks.map((link, idx) => (
-              <motion.a
-                key={link.name}
-                href={`#${link.id}`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 + idx * 0.1 }}
-                onClick={(e) => scrollToSection(e, link.id)}
-                className="text-4xl font-black text-white hover:text-oracle-blue transition-colors uppercase tracking-tighter"
-              >
-                {link.name}
-              </motion.a>
-            ))}
-            <motion.a 
-              href="#pricing"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              onClick={(e) => scrollToSection(e, 'pricing')}
-              className="mt-8 px-12 py-5 rounded-2xl bg-oracle-blue text-black font-black text-xl shadow-[0_0_40px_rgba(0,186,255,0.3)] uppercase tracking-widest text-center"
-            >
-              Get Started
-            </motion.a>
+              {navLinks.map((link, idx) => (
+                <motion.a
+                  key={link.name}
+                  href={`#${link.id}`}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + idx * 0.1 }}
+                  onClick={(e) => scrollToSection(e, link.id)}
+                  className="text-4xl font-black text-white hover:text-oracle-blue transition-colors uppercase tracking-tighter"
+                >
+                  {link.name}
+                </motion.a>
+              ))}
+
+              {/* Auth Links for Mobile */}
+              {isAuthenticated ? (
+                <>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 }}
+                    className="flex items-center gap-3 px-6 py-3 rounded-xl bg-green-500/10 border border-green-500/30 text-green-400"
+                  >
+                    <Wallet size={20} />
+                    <span className="text-lg font-black">{formatCurrency(wallet.balance)}</span>
+                  </motion.div>
+                  <Link 
+                    to="/dashboard"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="mt-4 px-12 py-5 rounded-2xl bg-oracle-blue text-black font-black text-xl shadow-[0_0_40px_rgba(0,186,255,0.3)] uppercase tracking-widest text-center"
+                  >
+                    Dashboard
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link 
+                    to="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="mt-4 px-12 py-5 rounded-2xl bg-zinc-800 border border-white/10 text-white font-black text-xl uppercase tracking-widest text-center"
+                  >
+                    Login
+                  </Link>
+                  <Link 
+                    to="/signup"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="px-12 py-5 rounded-2xl bg-oracle-blue text-black font-black text-xl shadow-[0_0_40px_rgba(0,186,255,0.3)] uppercase tracking-widest text-center"
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              )}
             
               <div className="absolute bottom-12 text-zinc-600 text-[10px] font-black uppercase tracking-[0.5em]">
                 Secure Protocol Active

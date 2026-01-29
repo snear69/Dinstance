@@ -1,6 +1,29 @@
-import React, { useState } from 'react';
-import { usePaystackPayment } from 'react-paystack';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ArrowRight, Loader2 } from 'lucide-react';
+
+// Load Paystack script dynamically
+const loadPaystackScript = () => {
+  return new Promise((resolve, reject) => {
+    if (window.PaystackPop) {
+      resolve(window.PaystackPop);
+      return;
+    }
+    
+    const existingScript = document.getElementById('paystack-script');
+    if (existingScript) {
+      existingScript.addEventListener('load', () => resolve(window.PaystackPop));
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.id = 'paystack-script';
+    script.src = 'https://js.paystack.co/v1/inline.js';
+    script.async = true;
+    script.onload = () => resolve(window.PaystackPop);
+    script.onerror = () => reject(new Error('Failed to load Paystack script'));
+    document.head.appendChild(script);
+  });
+};
 
 const PaystackCheckout = ({ amount, planName, popular, promo, cart, updateCart, onSuccess: onFulfillment }) => {
   const isThisPlanSelected = cart?.planName === planName;
@@ -9,15 +32,16 @@ const PaystackCheckout = ({ amount, planName, popular, promo, cart, updateCart, 
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Keep local state in sync with global cart
-  React.useEffect(() => {
+  const cartEmail = cart?.email;
+  useEffect(() => {
     if (isThisPlanSelected) {
-      setEmail(cart.email || '');
+      setEmail(cartEmail || '');
       setShowEmailInput(true);
     } else {
       setShowEmailInput(false);
       setEmail('');
     }
-  }, [isThisPlanSelected, cart.email, planName]);
+  }, [isThisPlanSelected, cartEmail]);
 
   // IMPORTANT: Never hardcode Paystack keys in the frontend bundle.
   // Set `VITE_PAYSTACK_PUBLIC_KEY` in your environment (see .env.example).
@@ -25,20 +49,7 @@ const PaystackCheckout = ({ amount, planName, popular, promo, cart, updateCart, 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const hasPublicKey = Boolean(publicKey);
 
-  const config = {
-    reference: (new Date()).getTime().toString(),
-    email: email || "customer@example.com",
-    amount: Math.round(amount * 100), // Amount in kobo
-    publicKey: publicKey,
-    currency: 'NGN',
-    metadata: {
-      plan: planName
-    }
-  };
-
-  const initializePayment = usePaystackPayment(config);
-
-  const handleSuccess = (reference) => {
+  const handleSuccess = useCallback((reference) => {
     console.log('PAYMENT_DEBUG: Success Reference:', reference);
     alert("Payment Successful! Provisioning your infrastructure...");
     setIsProcessing(false);
@@ -46,14 +57,14 @@ const PaystackCheckout = ({ amount, planName, popular, promo, cart, updateCart, 
     if (onFulfillment) {
       onFulfillment(email);
     }
-  };
+  }, [email, onFulfillment]);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     console.log('Payment closed');
     setIsProcessing(false);
-  };
+  }, []);
 
-  const handleClick = () => {
+  const handleClick = useCallback(async () => {
     if (!hasPublicKey) {
       alert('Payment is not configured. Missing VITE_PAYSTACK_PUBLIC_KEY.');
       return;
@@ -71,28 +82,42 @@ const PaystackCheckout = ({ amount, planName, popular, promo, cart, updateCart, 
     }
 
     setIsProcessing(true);
-    
-    // Safety timeout to reset processing state if popup doesn't open or hangs
-    const safetyTimeout = setTimeout(() => setIsProcessing(false), 30000);
 
     try {
-      initializePayment(
-        (ref) => {
-          clearTimeout(safetyTimeout);
-          handleSuccess(ref);
+      // Ensure Paystack is loaded
+      const PaystackPop = await loadPaystackScript();
+      
+      const handler = PaystackPop.setup({
+        key: publicKey,
+        email: email,
+        amount: Math.round(amount * 100), // Amount in kobo
+        currency: 'NGN',
+        ref: `oracle_${planName.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}`,
+        metadata: {
+          plan: planName,
+          custom_fields: [
+            {
+              display_name: "Plan",
+              variable_name: "plan",
+              value: planName
+            }
+          ]
         },
-        () => {
-          clearTimeout(safetyTimeout);
+        onClose: () => {
           handleClose();
+        },
+        callback: (response) => {
+          handleSuccess(response);
         }
-      );
+      });
+
+      handler.openIframe();
     } catch (error) {
-      clearTimeout(safetyTimeout);
       console.error("Paystack initialization failed", error);
-      alert("Payment initialization failed. Check console for details.");
+      alert("Payment initialization failed. Please try again.");
       setIsProcessing(false);
     }
-  };
+  }, [hasPublicKey, showEmailInput, email, publicKey, amount, planName, updateCart, handleClose, handleSuccess]);
 
   if (showEmailInput) {
     return (

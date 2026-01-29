@@ -1,0 +1,122 @@
+{
+  "users": [
+    {
+      "id": "10980269-d6e1-45cf-9fd6-5356efbc5403",
+      "email": "stxminus@gmail.com",
+      "passwordHash": "$2b$10$ZdWYTrlKNYVLCudpLueqgulQWKUAnII.CCvEiHjkAN2pcOJvKbN1K",
+      "name": "david",
+      "verified": false,
+      "createdAt": "2026-01-29T20:20:49.183Z"
+    },
+    {
+      "id": "bb6da6c8-8ac2-4b82-94e8-e2a56bbb75ac",
+      "email": "smellonear007@gmail.com",
+      "passwordHash": "$2b$10$7/YLX4E.LmJkGaF2s1p9d.BwEDtBeG3fuD0RD46w6NouRJT.ey1IO",
+      "name": "Smellonear",
+      "verified": false,
+      "createdAt": "2026-01-29T20:42:02.320Z"
+    }
+  ],
+  "wallets": [
+    {
+      "userId": "10980269-d6e1-45cf-9fd6-5356efbc5403",
+      "balance": 299200,
+      "currency": "NGN",
+      "createdAt": "2026-01-29T20:20:49.183Z",
+      "updatedAt": "2026-01-29T20:24:21.599Z"
+    },
+    {
+      "userId": "bb6da6c8-8ac2-4b82-94e8-e2a56bbb75ac",
+      "balance": 2200,
+      "currency": "NGN",
+      "createdAt": "2026-01-29T20:42:02.320Z",
+      "updatedAt": "2026-01-29T21:02:41.366Z"
+    }
+  ],
+  "transactions": [
+    {
+      "id": "05b7d9d3-808f-494e-9cb0-5f79dbd120fb",
+      "userId": "10980269-d6e1-45cf-9fd6-5356efbc5403",
+      "type": "topup",
+      "amount": 300000,
+      "description": "Wallet top-up via Paystack",
+      "reference": "topup_1769718086616",
+      "status": "completed",
+      "createdAt": "2026-01-29T20:21:26.943Z"
+    },
+    {
+      "id": "af6b3355-c2a8-454e-9b19-f837ffdac701",
+      "userId": "10980269-d6e1-45cf-9fd6-5356efbc5403",
+      "type": "purchase",
+      "amount": -800,
+      "planName": "Zero Free",
+      "description": "Purchased: Zero Free",
+      "status": "completed",
+      "createdAt": "2026-01-29T20:24:21.600Z"
+    },
+    {
+      "id": "0c66e942-8ebe-44a0-a6d5-e2ef2e20c0c9",
+      "userId": "bb6da6c8-8ac2-4b82-94e8-e2a56bbb75ac",
+      "type": "topup",
+      "amount": 1000,
+      "description": "Wallet top-up via Paystack",
+      "reference": "wallet_topup_1769719684286_tx9p8",
+      "status": "completed",
+      "createdAt": "2026-01-29T20:49:00.734Z"
+    },
+    {
+      "id": "5e8ed151-8192-41c8-9f11-fbcbf33d237c",
+      "userId": "bb6da6c8-8ac2-4b82-94e8-e2a56bbb75ac",
+      "type": "purchase",
+      "amount": -800,
+      "planName": "Zero Free",
+      "description": "Purchased: Zero Free",
+      "status": "completed",
+      "createdAt": "2026-01-29T20:49:32.234Z"
+    },
+    {
+      "id": "85445c3e-a7d6-423b-a36f-fdd293504b89",
+      "userId": "bb6da6c8-8ac2-4b82-94e8-e2a56bbb75ac",
+      "type": "topup",
+      "amount": 1000,
+      "description": "Wallet top-up via Paystack",
+      "reference": "wallet_topup_1769720186114_34gyrd",
+      "status": "completed",
+      "createdAt": "2026-01-29T20:57:16.454Z"
+    },
+    {
+      "id": "85cc9919-fd2c-4018-994e-c298f6c152da",
+      "userId": "bb6da6c8-8ac2-4b82-94e8-e2a56bbb75ac",
+      "type": "topup",
+      "amount": 1000,
+      "description": "Wallet top-up via Paystack",
+      "reference": "wallet_topup_1769720506002_v0cab3",
+      "status": "completed",
+      "createdAt": "2026-01-29T21:02:41.366Z"
+    }
+  ],
+  "carts": [
+    {
+      "userId": "10980269-d6e1-45cf-9fd6-5356efbc5403",
+      "items": [],
+      "createdAt": "2026-01-29T20:20:49.210Z",
+      "updatedAt": "2026-01-29T20:24:21.600Z"
+    },
+    {
+      "userId": "bb6da6c8-8ac2-4b82-94e8-e2a56bbb75ac",
+      "items": [],
+      "createdAt": "2026-01-29T20:42:02.340Z",
+      "updatedAt": "2026-01-29T20:49:32.234Z"
+    }
+  ],
+  "admins": [
+    {
+      "id": "admin-001",
+      "email": "stxminus@gmail.com",
+      "passwordHash": "$2b$10$CkHI2b9jUzrc13Bqs8VHfeWcCDSQB17h4bwvOWUJhP1EftCpyN9Di",
+      "name": "Near",
+      "role": "super_admin",
+      "createdAt": "2026-01-29T20:39:08.778Z"
+    }
+  ]
+}

@@ -1,21 +1,49 @@
-const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const { Resend } = require('resend');
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import { Resend } from 'resend';
+import { initDB } from './db/index.js';
+
+// Import routes
+import authRoutes from './routes/auth.js';
+import walletRoutes from './routes/wallet.js';
+import cartRoutes from './routes/cart.js';
+import adminRoutes from './routes/admin.js';
+import downloadsRoutes from './routes/downloads.js';
 
 dotenv.config();
 
 const app = express();
-app.use(cors());
+
+// Middleware
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:3000', 'https://oracle-endpoint.vercel.app'],
+  credentials: true
+}));
 app.use(express.json());
+
+// Initialize database
+await initDB();
+console.log('[DB] Database initialized');
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// In-memory "database" for carts (In production, use MongoDB or PostgreSQL)
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/wallet', walletRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/downloads', downloadsRoutes);
+
+// Health check
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Legacy cart endpoints (keeping for backward compatibility)
 const carts = new Map();
 
-// Save/Update Cart
-app.post('/api/cart', (req, res) => {
+app.post('/api/cart-legacy', (req, res) => {
   const { email, planName } = req.body;
   if (!email || !planName) return res.status(400).json({ error: 'Missing data' });
   
@@ -24,8 +52,7 @@ app.post('/api/cart', (req, res) => {
   res.json({ message: 'Cart saved' });
 });
 
-// Retrieve Cart
-app.get('/api/cart/:email', (req, res) => {
+app.get('/api/cart-legacy/:email', (req, res) => {
   const cart = carts.get(req.params.email);
   if (!cart) return res.status(404).json({ error: 'Cart not found' });
   res.json(cart);
@@ -35,7 +62,6 @@ app.get('/api/cart/:email', (req, res) => {
 app.post('/api/webhook/paystack', async (req, res) => {
   const event = req.body;
   
-  // Verify signature (Simplified for now - in production use crypto to verify X-Paystack-Signature)
   if (event.event === 'charge.success') {
     const { email } = event.data.customer;
     const { amount, metadata } = event.data;
@@ -45,7 +71,6 @@ app.post('/api/webhook/paystack', async (req, res) => {
     console.log(`[PAYSTACK WEBHOOK] Plan: ${planName}, Amount: ${amount}`);
 
     try {
-      // Send Fulfillment Email
       await resend.emails.send({
         from: 'Oracle Onboarding <onboarding@resend.dev>',
         to: email,
@@ -69,4 +94,7 @@ app.post('/api/webhook/paystack', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Oracle Backend running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`🚀 Oracle Backend running on port ${PORT}`);
+  console.log(`📦 API endpoints ready at http://localhost:${PORT}/api`);
+});
