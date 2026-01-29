@@ -117,7 +117,16 @@ oracle.setScaling({
 
       <div className="p-6 border-t border-white/10 bg-white/5 flex gap-4">
         <button 
-          onClick={() => alert("Your Oracle SDK package is being prepared for download...")}
+          onClick={() => {
+            // Trigger actual download from the public folder
+            const link = document.createElement('a');
+            link.href = '/oracle_bundle.zip'; // Assumes file exists in public/
+            link.download = 'oracle_bundle.zip';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            alert("Starting download of Oracle SDK Bundle. Please check your downloads folder.");
+          }}
           className="flex-1 py-3 bg-oracle-blue text-black text-xs font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-white transition-colors"
         >
           <Download size={16} /> DOWNLOAD PACK (.ZIP)

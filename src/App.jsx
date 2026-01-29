@@ -31,7 +31,7 @@ const ScrollToTop = () => {
 
 const HomePage = ({ onFulfillment, cart, updateCart }) => (
   <main className="relative z-10">
-    <Hero />
+    <Hero cart={cart} />
     <Stats />
     <Partners />
     <Features />

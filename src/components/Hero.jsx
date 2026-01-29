@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Terminal, Sparkles, Zap } from 'lucide-react';
 
-const Hero = () => {
+const Hero = ({ cart }) => {
   // Animated words
   const words = ["Deploy", "Scale", "Secure", "Integrate"];
   const [currentWord, setCurrentWord] = React.useState(0);
@@ -12,7 +12,15 @@ const Hero = () => {
       setCurrentWord((prev) => (prev + 1) % words.length);
     }, 2000);
     return () => clearInterval(interval);
-  }, []);
+  }, [words.length]);
+
+  const scrollToPricing = (e) => {
+    e.preventDefault();
+    const element = document.getElementById('pricing');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <section className="relative min-h-[90vh] md:min-h-screen flex items-center justify-center pt-24 pb-12 overflow-hidden">
@@ -103,8 +111,12 @@ const Hero = () => {
           transition={{ duration: 0.8, delay: 0.6 }}
           className="flex flex-col sm:flex-row gap-4 justify-center px-6"
         >
-          <a href="#pricing" className="px-8 py-4 bg-oracle-blue text-black font-black uppercase tracking-widest text-xs rounded-xl flex items-center justify-center gap-2 hover:bg-white transition-all transform hover:scale-105 group">
-            Get Started <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+          <a 
+            href="#pricing" 
+            onClick={scrollToPricing}
+            className="px-8 py-4 bg-oracle-blue text-black font-black uppercase tracking-widest text-xs rounded-xl flex items-center justify-center gap-2 hover:bg-white transition-all transform hover:scale-105 group"
+          >
+            {cart?.planName ? 'Complete Purchase' : 'Get Started'} <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
           </a>
           <a href="#api" className="px-8 py-4 glass text-white font-black uppercase tracking-widest text-xs rounded-xl hover:bg-white/10 transition-all">
             Technical Docs
