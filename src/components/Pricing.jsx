@@ -15,6 +15,15 @@ const paymentMethods = [
 
 const plans = [
   {
+    name: "Zero Free",
+    priceUSD: 0.5,
+    priceNGN: 0.5 * 1600,
+    description: "Limited-time promo tier. Test the waters risk-free.",
+    features: ["Basic API Access", "Single Endpoint", "7 Days Trial Env", "Community Support", "Standard Security"],
+    color: "from-emerald-500 to-teal-800",
+    promo: true
+  },
+  {
     name: "Starter",
     priceUSD: 480,
     priceNGN: 480 * 1600,
@@ -74,7 +83,7 @@ const Pricing = ({ onFulfillment }) => {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto items-stretch">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto items-stretch">
           {plans.map((plan, idx) => (
             <motion.div
               key={idx}
@@ -83,11 +92,16 @@ const Pricing = ({ onFulfillment }) => {
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
               whileHover={{ y: -10 }}
-              className={`relative p-8 md:p-10 rounded-[2.5rem] glass border-white/5 flex flex-col group transition-all duration-500 ${plan.popular ? 'border-oracle-blue/50 bg-oracle-blue/5 shadow-[0_0_50px_rgba(0,186,255,0.1)] scale-105 z-10' : ''}`}
+              className={`relative p-6 md:p-8 rounded-[2rem] glass border-white/5 flex flex-col group transition-all duration-500 ${plan.popular ? 'border-oracle-blue/50 bg-oracle-blue/5 shadow-[0_0_50px_rgba(0,186,255,0.1)] scale-105 z-10' : ''} ${plan.promo ? 'border-emerald-500/50 bg-emerald-500/5 shadow-[0_0_50px_rgba(16,185,129,0.15)]' : ''}`}
             >
               {plan.popular && (
                 <div className="absolute -top-5 left-1/2 -translate-x-1/2 px-6 py-2 bg-linear-to-r from-oracle-blue to-blue-600 text-black text-[10px] font-black rounded-full uppercase tracking-widest shadow-lg flex items-center gap-2">
                   <Sparkles size={12} /> Most Advanced
+                </div>
+              )}
+              {plan.promo && (
+                <div className="absolute -top-5 left-1/2 -translate-x-1/2 px-6 py-2 bg-linear-to-r from-emerald-500 to-teal-500 text-black text-[10px] font-black rounded-full uppercase tracking-widest shadow-lg flex items-center gap-2 animate-pulse">
+                  <Sparkles size={12} /> Limited Promo
                 </div>
               )}
               
