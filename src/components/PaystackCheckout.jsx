@@ -28,7 +28,8 @@ const PaystackCheckout = ({ amount, planName, popular, promo, cart, updateCart, 
   const initializePayment = usePaystackPayment(config);
 
   const handleSuccess = (reference) => {
-    console.log('Payment successful', reference);
+    console.log('PAYMENT_DEBUG: Success Reference:', reference);
+    alert("Payment Successful! Provisioning your infrastructure...");
     setIsProcessing(false);
     setShowEmailInput(false);
     if (onFulfillment) {
