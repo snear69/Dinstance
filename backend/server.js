@@ -46,7 +46,7 @@ app.post('/api/webhook/paystack', async (req, res) => {
     try {
       // Send Fulfillment Email
       await resend.emails.send({
-        from: 'Oracle Endpoint <fulfillment@oracle-endpoint.dev>',
+        from: 'Oracle Onboarding <onboarding@resend.dev>',
         to: email,
         subject: `Your ${planName} Documentation is Ready`,
         html: `
