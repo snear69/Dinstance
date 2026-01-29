@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Cpu, Menu, X } from 'lucide-react';
+import { Cpu, Menu, X, ShoppingCart } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
-const Navbar = () => {
+const Navbar = ({ cart }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -83,6 +83,19 @@ const Navbar = () => {
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-oracle-blue transition-all group-hover:w-full"></span>
             </motion.a>
           ))}
+
+          {/* Cart Indicator */}
+          {cart?.planName && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-oracle-blue/10 border border-oracle-blue/30 text-[10px] font-black uppercase text-oracle-blue"
+            >
+              <ShoppingCart size={14} />
+              <span>{cart.planName} Selected</span>
+            </motion.div>
+          )}
+
           <motion.a
             href="#pricing"
             onClick={(e) => scrollToSection(e, 'pricing')}
@@ -90,7 +103,7 @@ const Navbar = () => {
             whileTap={{ scale: 0.95 }}
             className="px-6 py-2.5 rounded-xl bg-oracle-blue text-black text-xs font-black uppercase tracking-widest"
           >
-            Get Started
+            {cart?.planName ? 'Change Plan' : 'Get Started'}
           </motion.a>
         </div>
 

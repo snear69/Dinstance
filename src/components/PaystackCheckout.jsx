@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { usePaystackPayment } from 'react-paystack';
 import { ArrowRight, Loader2 } from 'lucide-react';
 
-const PaystackCheckout = ({ amount, planName, popular, promo, onSuccess: onFulfillment }) => {
-  const [email, setEmail] = useState('');
-  const [showEmailInput, setShowEmailInput] = useState(false);
+const PaystackCheckout = ({ amount, planName, popular, promo, cart, updateCart, onSuccess: onFulfillment }) => {
+  const isThisPlanSelected = cart?.planName === planName;
+  const [email, setEmail] = useState(isThisPlanSelected ? cart.email || '' : '');
+  const [showEmailInput, setShowEmailInput] = useState(isThisPlanSelected);
   const [isProcessing, setIsProcessing] = useState(false);
 
   // IMPORTANT: Never hardcode Paystack keys in the frontend bundle.
@@ -46,6 +47,7 @@ const PaystackCheckout = ({ amount, planName, popular, promo, onSuccess: onFulfi
     }
     if (!showEmailInput) {
       setShowEmailInput(true);
+      updateCart({ planName, email: '' });
       return;
     }
     
@@ -56,11 +58,25 @@ const PaystackCheckout = ({ amount, planName, popular, promo, onSuccess: onFulfi
     }
 
     setIsProcessing(true);
+    
+    // Safety timeout to reset processing state if popup doesn't open or hangs
+    const safetyTimeout = setTimeout(() => setIsProcessing(false), 30000);
+
     try {
-      initializePayment(handleSuccess, handleClose);
+      initializePayment(
+        (ref) => {
+          clearTimeout(safetyTimeout);
+          handleSuccess(ref);
+        },
+        () => {
+          clearTimeout(safetyTimeout);
+          handleClose();
+        }
+      );
     } catch (error) {
+      clearTimeout(safetyTimeout);
       console.error("Paystack initialization failed", error);
-      alert("Payment initialization failed. check console for details.");
+      alert("Payment initialization failed. Check console for details.");
       setIsProcessing(false);
     }
   };
@@ -72,7 +88,11 @@ const PaystackCheckout = ({ amount, planName, popular, promo, onSuccess: onFulfi
           type="email"
           placeholder="Enter your email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            const val = e.target.value;
+            setEmail(val);
+            updateCart({ planName, email: val });
+          }}
           className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm outline-none focus:border-oracle-blue transition-colors text-white"
         />
         <button 

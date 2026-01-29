@@ -50,7 +50,7 @@ const plans = [
   }
 ];
 
-const Pricing = ({ onFulfillment }) => {
+const Pricing = ({ onFulfillment, cart, updateCart }) => {
   return (
     <section id="pricing" className="py-24 relative overflow-hidden">
       {/* Background decorations */}
@@ -134,6 +134,8 @@ const Pricing = ({ onFulfillment }) => {
                   planName={plan.name} 
                   popular={plan.popular}
                   promo={plan.promo}
+                  cart={cart}
+                  updateCart={updateCart}
                   onSuccess={(email) => onFulfillment && onFulfillment(plan.name, email)}
                 />
                 

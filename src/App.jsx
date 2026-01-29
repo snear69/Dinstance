@@ -46,6 +46,14 @@ const HomePage = ({ onFulfillment }) => (
 
 function App() {
   const [deliveryData, setDeliveryData] = useState({ isOpen: false, planName: '', email: '' });
+  const [cart, setCart] = useState(() => {
+    const savedCart = localStorage.getItem('oracle_cart');
+    return savedCart ? JSON.parse(savedCart) : { planName: '', email: '' };
+  });
+
+  useEffect(() => {
+    localStorage.setItem('oracle_cart', JSON.stringify(cart));
+  }, [cart]);
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -73,6 +81,11 @@ function App() {
 
   const handleFulfillment = (planName, email) => {
     setDeliveryData({ isOpen: true, planName, email });
+    setCart({ planName: '', email: '' }); // Clear cart on success
+  };
+
+  const updateCart = (data) => {
+    setCart(prev => ({ ...prev, ...data }));
   };
 
   return (
@@ -83,10 +96,10 @@ function App() {
       {/* Removed overflow-hidden to prevent black screen if loader hangs */}
       <div className="relative min-h-screen bg-oracle-dark">
         <Scene />
-        <Navbar />
+        <Navbar cart={cart} />
         
         <Routes>
-          <Route path="/" element={<HomePage onFulfillment={handleFulfillment} />} />
+          <Route path="/" element={<HomePage onFulfillment={handleFulfillment} cart={cart} updateCart={updateCart} />} />
           <Route path="/docs" element={<DocsPage />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />

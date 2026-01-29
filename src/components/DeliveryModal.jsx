@@ -116,11 +116,17 @@ oracle.setScaling({
       </div>
 
       <div className="p-6 border-t border-white/10 bg-white/5 flex gap-4">
-        <button className="flex-1 py-3 bg-oracle-blue text-black text-xs font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-white transition-colors">
+        <button 
+          onClick={() => alert("Your Oracle SDK package is being prepared for download...")}
+          className="flex-1 py-3 bg-oracle-blue text-black text-xs font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-white transition-colors"
+        >
           <Download size={16} /> DOWNLOAD PACK (.ZIP)
         </button>
-        <button className="flex-1 py-3 glass text-white text-xs font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-white/10 transition-colors">
-          SEND TO {email.toUpperCase()}
+        <button 
+          onClick={() => alert(`A secure link has been sent to ${email}`)}
+          className="flex-1 py-3 glass text-white text-xs font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-white/10 transition-colors"
+        >
+          RESEND TO {email.toUpperCase()}
         </button>
       </div>
     </div>
