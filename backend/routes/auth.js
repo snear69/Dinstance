@@ -2,6 +2,7 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import db, { generateId, timestamp } from '../db/index.js';
 import { generateToken, authenticateToken } from '../middleware/auth.js';
+import { sendOTP } from '../utils/email.js';
 
 const router = express.Router();
 
@@ -160,6 +161,113 @@ router.get('/me', authenticateToken, async (req, res) => {
 router.post('/logout', authenticateToken, (req, res) => {
   console.log(`[AUTH] User logged out: ${req.user.email}`);
   res.json({ message: 'Logged out successfully' });
+});
+
+// Request OTP
+router.post('/otp/request', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email is required' });
+
+    // Generate 6-digit code
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 10 * 60000).toISOString(); // 10 mins
+
+    await db.read();
+    
+    // Remove any existing OTPs for this email
+    db.data.otps = db.data.otps.filter(o => o.email !== email);
+    
+    // Add new OTP
+    db.data.otps.push({ email, code, expiresAt });
+    await db.write();
+
+    // Send email
+    await sendOTP(email, code);
+
+    res.json({ message: 'Verification code sent to your email' });
+  } catch (error) {
+    console.error('[AUTH ERROR] OTP Request failed:', error);
+    res.status(500).json({ error: 'Failed to send verification code' });
+  }
+});
+
+// Verify OTP
+router.post('/otp/verify', async (req, res) => {
+  try {
+    const { email, code, name } = req.body; // name is optional (for new users)
+    
+    if (!email || !code) {
+      return res.status(400).json({ error: 'Email and code are required' });
+    }
+
+    await db.read();
+
+    const otp = db.data.otps.find(o => o.email === email && o.code === code);
+    
+    if (!otp) {
+      return res.status(400).json({ error: 'Invalid or expired code' });
+    }
+
+    if (new Date(otp.expiresAt) < new Date()) {
+      return res.status(400).json({ error: 'Code has expired' });
+    }
+
+    // Code is valid - remove it
+    db.data.otps = db.data.otps.filter(o => o !== otp);
+    
+    // Find or create user
+    let user = db.data.users.find(u => u.email === email);
+    let isNewUser = false;
+
+    if (!user) {
+      isNewUser = true;
+      const userId = generateId();
+      user = {
+        id: userId,
+        email,
+        name: name || email.split('@')[0],
+        verified: true,
+        createdAt: timestamp()
+      };
+      
+      const newWallet = {
+        userId,
+        balance: 0,
+        currency: 'NGN',
+        createdAt: timestamp(),
+        updatedAt: timestamp()
+      };
+
+      db.data.users.push(user);
+      db.data.wallets.push(newWallet);
+    } else {
+      user.verified = true;
+    }
+
+    await db.write();
+
+    // Generate token
+    const token = generateToken(user);
+    const wallet = db.data.wallets.find(w => w.userId === user.id);
+
+    res.json({
+      message: isNewUser ? 'Account created successfully' : 'Login successful',
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name
+      },
+      wallet: {
+        balance: wallet?.balance || 0,
+        currency: wallet?.currency || 'NGN'
+      },
+      token
+    });
+  } catch (error) {
+    console.error('[AUTH ERROR] OTP Verification failed:', error);
+    res.status(500).json({ error: 'Verification failed' });
+  }
 });
 
 export default router;

@@ -109,6 +109,36 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const sendOTP = async (email) => {
+    const res = await fetch(`${API_URL}/auth/otp/request`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to send OTP');
+    return data;
+  };
+
+  const verifyOTP = async (email, code, name = '') => {
+    const res = await fetch(`${API_URL}/auth/otp/verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, code, name })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Verification failed');
+
+    localStorage.setItem('oracle_token', data.token);
+    setToken(data.token);
+    setUser(data.user);
+    setWallet(data.wallet);
+
+    return data;
+  };
+
   const value = {
     user,
     wallet,
@@ -119,7 +149,9 @@ export function AuthProvider({ children }) {
     register,
     logout,
     refreshWallet,
-    fetchProfile
+    fetchProfile,
+    sendOTP,
+    verifyOTP
   };
 
   return (

@@ -6,20 +6,43 @@ import { useAuth } from '../../contexts/AuthContext';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, sendOTP, verifyOTP } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [step, setStep] = useState(1); // 1: Email, 2: OTP
+  const [otpCode, setOtpCode] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleSendOTP = async (e) => {
     e.preventDefault();
+    if (!email) {
+      setError('Email is required');
+      return;
+    }
     setError('');
     setLoading(true);
-
     try {
-      await login(email, password);
+      await sendOTP(email);
+      setStep(2);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOTP = async (e) => {
+    e.preventDefault();
+    if (otpCode.length !== 6) {
+      setError('Please enter a valid 6-digit code');
+      return;
+    }
+    setError('');
+    setLoading(true);
+    try {
+      await verifyOTP(email, otpCode);
       navigate('/dashboard');
     } catch (err) {
       setError(err.message);
@@ -61,7 +84,7 @@ const LoginPage = () => {
           <div className="absolute -inset-0.5 bg-gradient-to-r from-oracle-blue via-oracle-purple to-oracle-blue rounded-[2rem] opacity-30 blur-sm animate-pulse" />
           
           <div className="relative bg-zinc-900/80 backdrop-blur-xl rounded-[2rem] border border-white/10 p-8 shadow-2xl">
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={step === 1 ? handleSendOTP : handleVerifyOTP} className="space-y-6">
               {/* Error Alert */}
               {error && (
                 <motion.div 
@@ -73,55 +96,60 @@ const LoginPage = () => {
                 </motion.div>
               )}
 
-              {/* Email Field */}
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    placeholder="you@example.com"
-                    className="w-full pl-12 pr-4 py-4 bg-zinc-800/50 border border-white/10 rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-oracle-blue/50 focus:ring-2 focus:ring-oracle-blue/20 transition-all"
-                  />
-                </div>
-              </div>
-
-              {/* Password Field */}
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
-                  Password
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    placeholder="••••••••"
-                    className="w-full pl-12 pr-12 py-4 bg-zinc-800/50 border border-white/10 rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-oracle-blue/50 focus:ring-2 focus:ring-oracle-blue/20 transition-all"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
-                  >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
-                </div>
-              </div>
-
-              {/* Forgot Password */}
-              <div className="text-right">
-                <Link to="/forgot-password" className="text-sm text-oracle-blue hover:text-oracle-blue/80 transition-colors">
-                  Forgot password?
-                </Link>
-              </div>
+              {step === 1 ? (
+                <>
+                  {/* Email Field */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+                      Email Address
+                    </label>
+                    <div className="relative">
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        placeholder="you@example.com"
+                        className="w-full pl-12 pr-4 py-4 bg-zinc-800/50 border border-white/10 rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-oracle-blue/50 focus:ring-2 focus:ring-oracle-blue/20 transition-all"
+                      />
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* OTP Code Field */}
+                  <div className="space-y-4 text-center">
+                    <div className="p-4 bg-oracle-blue/10 border border-oracle-blue/20 rounded-xl">
+                      <p className="text-sm text-oracle-blue">
+                        Verification code sent to <strong>{email}</strong>
+                      </p>
+                    </div>
+                    <div className="space-y-2 text-left">
+                      <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+                        6-Digit Code
+                      </label>
+                      <div className="relative">
+                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                        <input
+                          type="text"
+                          value={otpCode}
+                          onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                          required
+                          placeholder="000000"
+                          className="w-full pl-12 pr-4 py-4 bg-zinc-800/50 border border-white/10 rounded-xl text-white text-2xl tracking-[0.5em] font-mono placeholder-zinc-600 focus:outline-none focus:border-oracle-blue/50 focus:ring-2 focus:ring-oracle-blue/20 transition-all"
+                        />
+                      </div>
+                    </div>
+                    <button 
+                      type="button"
+                      onClick={() => setStep(1)}
+                      className="text-xs text-zinc-500 hover:text-white transition-colors underline"
+                    >
+                      Change email address
+                    </button>
+                  </>
+                )}
 
               {/* Submit Button */}
               <motion.button
@@ -135,7 +163,7 @@ const LoginPage = () => {
                   <Loader2 className="w-5 h-5 animate-spin" />
                 ) : (
                   <>
-                    Sign In
+                    {step === 1 ? 'Send Verification Code' : 'Sign In'}
                     <ArrowRight className="w-5 h-5" />
                   </>
                 )}

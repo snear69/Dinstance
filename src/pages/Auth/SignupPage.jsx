@@ -6,43 +6,45 @@ import { useAuth } from '../../contexts/AuthContext';
 
 const SignupPage = () => {
   const navigate = useNavigate();
-  const { register } = useAuth();
+  const { register, sendOTP, verifyOTP } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState(''); // Keep for legacy but we'll prioritize OTP
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [step, setStep] = useState(1); // 1: Info, 2: OTP
+  const [otpCode, setOtpCode] = useState('');
 
-  // Password strength indicators
-  const passwordChecks = {
-    length: password.length >= 6,
-    uppercase: /[A-Z]/.test(password),
-    lowercase: /[a-z]/.test(password),
-    number: /[0-9]/.test(password)
+  const handleSendOTP = async (e) => {
+    e.preventDefault();
+    if (!name || !email) {
+      setError('Name and email are required');
+      return;
+    }
+    setError('');
+    setLoading(true);
+    try {
+      await sendOTP(email);
+      setStep(2);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const passwordStrength = Object.values(passwordChecks).filter(Boolean).length;
-
-  const handleSubmit = async (e) => {
+  const handleVerifyOTP = async (e) => {
     e.preventDefault();
+    if (otpCode.length !== 6) {
+      setError('Please enter a valid 6-digit code');
+      return;
+    }
     setError('');
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters');
-      return;
-    }
-
     setLoading(true);
-
     try {
-      await register(name, email, password);
+      await verifyOTP(email, otpCode, name);
       navigate('/dashboard');
     } catch (err) {
       setError(err.message);
@@ -84,141 +86,90 @@ const SignupPage = () => {
           <div className="absolute -inset-0.5 bg-gradient-to-r from-oracle-purple via-oracle-blue to-oracle-purple rounded-[2rem] opacity-30 blur-sm animate-pulse" />
           
           <div className="relative bg-zinc-900/80 backdrop-blur-xl rounded-[2rem] border border-white/10 p-8 shadow-2xl">
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={step === 1 ? handleSendOTP : handleVerifyOTP} className="space-y-5">
               {/* Error Alert */}
               {error && (
                 <motion.div 
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm"
+                   initial={{ opacity: 0, y: -10 }}
+                   animate={{ opacity: 1, y: 0 }}
+                   className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm"
                 >
                   {error}
                 </motion.div>
               )}
 
-              {/* Name Field */}
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
-                  Full Name
-                </label>
-                <div className="relative">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    placeholder="John Doe"
-                    className="w-full pl-12 pr-4 py-4 bg-zinc-800/50 border border-white/10 rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-oracle-blue/50 focus:ring-2 focus:ring-oracle-blue/20 transition-all"
-                  />
-                </div>
-              </div>
+              {step === 1 ? (
+                <>
+                  {/* Name Field */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+                      Full Name
+                    </label>
+                    <div className="relative">
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                      <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                        placeholder="John Doe"
+                        className="w-full pl-12 pr-4 py-4 bg-zinc-800/50 border border-white/10 rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-oracle-blue/50 focus:ring-2 focus:ring-oracle-blue/20 transition-all"
+                      />
+                    </div>
+                  </div>
 
-              {/* Email Field */}
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    placeholder="you@example.com"
-                    className="w-full pl-12 pr-4 py-4 bg-zinc-800/50 border border-white/10 rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-oracle-blue/50 focus:ring-2 focus:ring-oracle-blue/20 transition-all"
-                  />
-                </div>
-              </div>
-
-              {/* Password Field */}
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
-                  Password
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    placeholder="••••••••"
-                    className="w-full pl-12 pr-12 py-4 bg-zinc-800/50 border border-white/10 rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-oracle-blue/50 focus:ring-2 focus:ring-oracle-blue/20 transition-all"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
-                  >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
-                </div>
-
-                {/* Password Strength */}
-                {password && (
-                  <motion.div 
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    className="space-y-2 mt-3"
-                  >
-                    <div className="flex gap-1">
-                      {[1, 2, 3, 4].map((level) => (
-                        <div 
-                          key={level}
-                          className={`h-1 flex-1 rounded-full transition-colors ${
-                            passwordStrength >= level 
-                              ? level <= 1 ? 'bg-red-500' 
-                                : level <= 2 ? 'bg-orange-500' 
-                                : level <= 3 ? 'bg-yellow-500' 
-                                : 'bg-green-500'
-                              : 'bg-zinc-700'
-                          }`}
+                  {/* Email Field */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+                      Email Address
+                    </label>
+                    <div className="relative">
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        placeholder="you@example.com"
+                        className="w-full pl-12 pr-4 py-4 bg-zinc-800/50 border border-white/10 rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-oracle-blue/50 focus:ring-2 focus:ring-oracle-blue/20 transition-all"
+                      />
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* OTP Code Field */}
+                  <div className="space-y-4 text-center">
+                    <div className="p-4 bg-oracle-blue/10 border border-oracle-blue/20 rounded-xl">
+                      <p className="text-sm text-oracle-blue">
+                        Verification code sent to <strong>{email}</strong>
+                      </p>
+                    </div>
+                    <div className="space-y-2 text-left">
+                      <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+                        6-Digit Code
+                      </label>
+                      <div className="relative">
+                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                        <input
+                          type="text"
+                          value={otpCode}
+                          onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                          required
+                          placeholder="000000"
+                          className="w-full pl-12 pr-4 py-4 bg-zinc-800/50 border border-white/10 rounded-xl text-white text-2xl tracking-[0.5em] font-mono placeholder-zinc-600 focus:outline-none focus:border-oracle-blue/50 focus:ring-2 focus:ring-oracle-blue/20 transition-all"
                         />
-                      ))}
-                    </div>
-                    <div className="grid grid-cols-2 gap-2 text-[10px]">
-                      <div className={`flex items-center gap-1 ${passwordChecks.length ? 'text-green-400' : 'text-zinc-600'}`}>
-                        <Check className="w-3 h-3" /> 6+ characters
-                      </div>
-                      <div className={`flex items-center gap-1 ${passwordChecks.uppercase ? 'text-green-400' : 'text-zinc-600'}`}>
-                        <Check className="w-3 h-3" /> Uppercase
-                      </div>
-                      <div className={`flex items-center gap-1 ${passwordChecks.lowercase ? 'text-green-400' : 'text-zinc-600'}`}>
-                        <Check className="w-3 h-3" /> Lowercase
-                      </div>
-                      <div className={`flex items-center gap-1 ${passwordChecks.number ? 'text-green-400' : 'text-zinc-600'}`}>
-                        <Check className="w-3 h-3" /> Number
                       </div>
                     </div>
-                  </motion.div>
+                    <button 
+                      type="button"
+                      onClick={() => setStep(1)}
+                      className="text-xs text-zinc-500 hover:text-white transition-colors underline"
+                    >
+                      Change email address
+                    </button>
+                  </>
                 )}
-              </div>
-
-              {/* Confirm Password Field */}
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
-                  Confirm Password
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
-                    placeholder="••••••••"
-                    className={`w-full pl-12 pr-4 py-4 bg-zinc-800/50 border rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:ring-2 transition-all ${
-                      confirmPassword && password !== confirmPassword 
-                        ? 'border-red-500/50 focus:border-red-500/50 focus:ring-red-500/20' 
-                        : confirmPassword && password === confirmPassword
-                          ? 'border-green-500/50 focus:border-green-500/50 focus:ring-green-500/20'
-                          : 'border-white/10 focus:border-oracle-blue/50 focus:ring-oracle-blue/20'
-                    }`}
-                  />
-                </div>
-              </div>
 
               {/* Submit Button */}
               <motion.button
@@ -232,7 +183,7 @@ const SignupPage = () => {
                   <Loader2 className="w-5 h-5 animate-spin" />
                 ) : (
                   <>
-                    Create Account
+                    {step === 1 ? 'Send Verification Code' : 'Verify & Create Account'}
                     <ArrowRight className="w-5 h-5" />
                   </>
                 )}

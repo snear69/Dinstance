@@ -13,6 +13,7 @@ const defaultData = {
   wallets: [], 
   transactions: [], 
   carts: [],
+  otps: [],
   admins: [
     // Default admin account
     {
