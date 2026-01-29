@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import Lenis from '@studio-freight/lenis';
 import Scene from './components/Scene';
 import Navbar from './components/Navbar';
