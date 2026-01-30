@@ -37,7 +37,7 @@ const loadPaystackScript = () => {
   });
 };
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://oracle-backend-zy42.onrender.com/api';
 const PAYSTACK_PUBLIC_KEY = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
 
 const WalletTopup = ({ isOpen, onClose, onSuccess, userEmail, token }) => {
