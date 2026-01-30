@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-ro
 import { AnimatePresence } from 'framer-motion';
 import Lenis from '@studio-freight/lenis';
 
-// Context Providers
+// Context Providers (Trigger Redeploy)
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
 
