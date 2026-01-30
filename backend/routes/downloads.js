@@ -16,14 +16,13 @@ router.get('/purchases', authenticateToken, async (req, res) => {
       t => t.userId === req.user.id && t.type === 'purchase' && t.status === 'completed'
     );
 
-    // EMERGENCY BYPASS FOR DEV TESTING (If database wiped on Render)
-    const devEmails = ['davidolagbenro69@gmail.com', 'stxminus@gmail.com', 'davidolagbenro35@gmail.com'];
-    if (transactions.length === 0 && user && devEmails.includes(user.email)) {
-      console.log('DEV_DEBUG: Triggering Emergency Bypass for', user.email);
+    // AUTO BYPASS FOR ALL USERS (Testing Mode - Remove in Production)
+    if (transactions.length === 0 && user) {
+      console.log('AUTO_BYPASS: Granting access to', user.email);
       // Create a virtual transaction so they can see the docs
       transactions = [{
-        id: 'dev_bypass_' + Date.now(),
-        planName: 'Enterprise (Dev Bypass)',
+        id: 'auto_bypass_' + Date.now(),
+        planName: 'Enterprise (Auto Access)',
         amount: 0,
         createdAt: new Date().toISOString(),
         downloaded: false
