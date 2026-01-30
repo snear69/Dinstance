@@ -109,15 +109,24 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const sendOTP = async (email) => {
+  const sendOTP = async (email, name = '') => {
     const res = await fetch(`${API_URL}/auth/otp/request`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email })
+      body: JSON.stringify({ email, name })
     });
 
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Failed to send OTP');
+    if (!res.ok) throw new Error(data.error || 'Failed to authenticate');
+    
+    // If backend returns a token immediately (Direct Login Mode)
+    if (data.token) {
+      localStorage.setItem('oracle_token', data.token);
+      setToken(data.token);
+      setUser(data.user);
+      setWallet(data.wallet);
+    }
+
     return data;
   };
 

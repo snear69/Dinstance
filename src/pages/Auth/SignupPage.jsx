@@ -26,8 +26,13 @@ const SignupPage = () => {
     setError('');
     setLoading(true);
     try {
-      await sendOTP(email);
-      setStep(2);
+      const data = await sendOTP(email, name);
+      if (data.token) {
+        // Direct Login Success
+        navigate('/dashboard');
+      } else {
+        setStep(2);
+      }
     } catch (err) {
       setError(err.message);
     } finally {

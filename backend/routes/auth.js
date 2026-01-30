@@ -164,31 +164,67 @@ router.post('/logout', authenticateToken, (req, res) => {
 });
 
 // Request OTP
+// Request OTP - Now repurposed for direct login/signup without email verification
 router.post('/otp/request', async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email, name } = req.body;
     if (!email) return res.status(400).json({ error: 'Email is required' });
-
-    // Generate 6-digit code
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = new Date(Date.now() + 10 * 60000).toISOString(); // 10 mins
 
     await db.read();
     
-    // Remove any existing OTPs for this email
-    db.data.otps = db.data.otps.filter(o => o.email !== email);
-    
-    // Add new OTP
-    db.data.otps.push({ email, code, expiresAt });
+    // Find or create user
+    let user = db.data.users.find(u => u.email.toLowerCase() === email.toLowerCase());
+    let isNewUser = false;
+
+    if (!user) {
+      isNewUser = true;
+      const userId = generateId();
+      user = {
+        id: userId,
+        email: email.toLowerCase(),
+        name: name || email.split('@')[0],
+        verified: true,
+        createdAt: timestamp()
+      };
+      
+      const newWallet = {
+        userId,
+        balance: 0,
+        currency: 'NGN',
+        createdAt: timestamp(),
+        updatedAt: timestamp()
+      };
+
+      db.data.users.push(user);
+      db.data.wallets.push(newWallet);
+    } else {
+      user.verified = true;
+    }
+
     await db.write();
 
-    // Send email
-    await sendOTP(email, code);
+    // Generate token
+    const token = generateToken(user);
+    const wallet = db.data.wallets.find(w => w.userId === user.id);
 
-    res.json({ message: 'Verification code sent to your email' });
+    console.log(`[AUTH] Direct login/signup for: ${email}`);
+
+    res.json({ 
+      message: isNewUser ? 'Account created successfully' : 'Login successful',
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name
+      },
+      wallet: {
+        balance: wallet?.balance || 0,
+        currency: wallet?.currency || 'NGN'
+      },
+      token
+    });
   } catch (error) {
-    console.error('[AUTH ERROR] OTP Request failed:', error);
-    res.status(500).json({ error: 'Failed to send verification code' });
+    console.error('[AUTH ERROR] Direct Auth failed:', error);
+    res.status(500).json({ error: 'Authentication failed' });
   }
 });
 
