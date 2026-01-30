@@ -36,6 +36,15 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/downloads', downloadsRoutes);
 
+// Root route
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Oracle Backend API is running', 
+    version: '1.0.0',
+    endpoints: ['/api/auth', '/api/wallet', '/api/health']
+  });
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
