@@ -7,18 +7,6 @@ const TestSprite = () => {
   
   const API_URL = import.meta.env.VITE_API_URL || 'https://oracle-backend-zy42.onrender.com/api';
 
-  const handleForceUnlock = () => {
-    localStorage.setItem('force_unlock_docs', 'true');
-    alert('✅ Force unlock enabled! Go to /downloads and refresh the page.');
-  };
-
-  const handleClearUnlock = () => {
-    localStorage.removeItem('force_unlock_docs');
-    alert('🔒 Force unlock disabled.');
-  };
-
-  const isForceUnlocked = localStorage.getItem('force_unlock_docs') === 'true';
-
   return (
     <div className="fixed top-24 left-6 z-[99999]">
       <div 
@@ -56,25 +44,6 @@ const TestSprite = () => {
             <p className="text-zinc-400 break-all">
               {token ? `${token.substring(0, 20)}...` : 'MISSING'}
             </p>
-          </div>
-
-          <div className="pt-2 border-t border-white/5 space-y-2">
-            <p className="text-zinc-500 uppercase font-black mb-2">Force Unlock</p>
-            <p className={`text-xs mb-2 ${isForceUnlocked ? 'text-green-400' : 'text-zinc-600'}`}>
-              Status: {isForceUnlocked ? '✅ UNLOCKED' : '🔒 LOCKED'}
-            </p>
-            <button
-              onClick={handleForceUnlock}
-              className="w-full py-2 bg-green-500 hover:bg-green-600 text-black font-bold rounded-lg transition-all text-xs"
-            >
-              🔓 FORCE UNLOCK DOCS
-            </button>
-            <button
-              onClick={handleClearUnlock}
-              className="w-full py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg transition-all text-xs"
-            >
-              🔒 CLEAR UNLOCK
-            </button>
           </div>
 
           <div className="pt-2 border-t border-white/5">
