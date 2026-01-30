@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "render": {
+      "command": "render-mcp",
+      "args": [],
+      "env": {
+        "RENDER_API_KEY": "rnd_Fwjrdm4PxDIGTkg8xK7FUpBIPXDi"
+      }
+    },
+    "TestSprite": {
+      "command": "npx",
+      "args": [
+        "@testsprite/testsprite-mcp@latest"
+      ],
+      "env": {
+        "API_KEY": "sk-user-eSbZteZ1K2UFDf6zpP2wh4KNpzdfti2uE6la6IcFXmZ2XSzptuWRiY-he7x1ykWNlhWKLr5tDSjmpBIv0UD2B7xt1CxZo-JIlX_eHLSExtoYjAtWww5911AM-tzUoa-qxXI"
+      }
+    }
+  }
+}

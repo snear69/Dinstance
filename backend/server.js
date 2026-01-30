@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { Resend } from 'resend';
+import process from 'node:process';
 import { initDB } from './db/index.js';
 
 // Import routes
@@ -17,7 +18,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000', 'https://oracle-endpoint.vercel.app'],
+  origin: '*',
   credentials: true
 }));
 app.use(express.json());
