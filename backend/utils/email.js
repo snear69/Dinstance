@@ -90,6 +90,14 @@ export const sendPurchaseReceipt = async (email, name, items, total, balance) =>
 };
 
 export const sendOTP = async (email, code) => {
+  const isPlaceholder = process.env.RESEND_API_KEY === 're_your_test_key_here' || !process.env.RESEND_API_KEY;
+  
+  if (isPlaceholder) {
+    console.log(`[MOCK EMAIL] To: ${email}, Code: ${code}`);
+    console.warn(`[WARNING] Using mock email mode. Set a real RESEND_API_KEY to send actual emails.`);
+    return { mock: true };
+  }
+
   try {
     await resend.emails.send({
       from: 'Oracle Auth <auth@resend.dev>',
@@ -117,6 +125,11 @@ export const sendOTP = async (email, code) => {
     console.log(`[EMAIL] OTP sent to ${email}`);
   } catch (error) {
     console.error('[EMAIL ERROR] Failed to send OTP:', error);
+    // In production, we might want to throw, but for demo let's log and allow login for a specific test user
+    if (email === 'stxminus@gmail.com' || email === 'davidolagbenro35@gmail.com') {
+       console.log('[DEBUG] Allowing test user login despite email failure');
+       return { error: 'Email service unreachable', debug: true };
+    }
     throw error;
   }
 };
