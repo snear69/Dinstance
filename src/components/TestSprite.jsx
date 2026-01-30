@@ -27,7 +27,7 @@ const TestSprite = () => {
           <div>
             <p className="text-zinc-500 uppercase font-black mb-1">Auth Status</p>
             <p className={isAuthenticated ? 'text-green-400' : 'text-red-400'}>
-              {isAuthenticated ? 'AUTHENTICATED' : 'GUEST'}
+              {isAuthenticated ? 'AUTHENTICATED' : 'NOT LOGGED IN'}
             </p>
           </div>
 

@@ -58,6 +58,9 @@ const DocumentationPage = () => {
     setVerificationState('loading');
     
     try {
+      // Small delay to make it feel more premium and intentional
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
       // 1. Refresh user wallet/metadata
       if (refreshWallet) await refreshWallet();
       
@@ -74,27 +77,28 @@ const DocumentationPage = () => {
             setPurchases(data.purchases);
             setActivePurchase(data.purchases[0]);
             
-            // Wait a moment for the 'WOW' effect
+            // Show success state for long enough to appreciate it
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            setVerificationState('success');
+            
+            // Final transition to show the docs
             setTimeout(() => {
-              setVerificationState('success');
-              
-              // Final transition to show the docs
-              setTimeout(() => {
-                setLoading(false);
-                setVerificationState('idle');
-              }, 1500);
-            }, 1000);
+              setLoading(false);
+              setVerificationState('idle');
+            }, 1500);
         } else {
             // No payment found yet
-            setTimeout(() => {
-                setVerificationState('idle');
-                alert("No active license found yet. It may take a minute for the blockchain sync. Please try again in 30 seconds.");
-            }, 1000);
+            await new Promise(resolve => setTimeout(resolve, 800));
+            setVerificationState('idle');
+            alert("No active license found.\n\nIf you just made a payment, please wait 30-60 seconds for it to process, then click 'Activate License' again.\n\nIf you haven't purchased a plan yet, please click 'Purchase a Plan' below.");
         }
+      } else {
+        throw new Error('Failed to check for licenses');
       }
     } catch (error) {
       console.error('Verification failed:', error);
       setVerificationState('idle');
+      alert('Failed to verify license. Please check your internet connection and try again.');
     }
   };
 
@@ -203,8 +207,8 @@ const DocumentationPage = () => {
               animate={{ opacity: 1, y: 0 }}
               className="text-4xl font-black text-white tracking-tighter uppercase italic"
             >
-              {verificationState === 'loading' ? 'Verifying Node...' : 
-               verificationState === 'success' ? 'Access Granted' : 'License Required'}
+              {verificationState === 'loading' ? 'Activating License...' : 
+               verificationState === 'success' ? 'Access Granted' : 'Documentation Locked'}
             </motion.h1>
             <motion.p 
               initial={{ opacity: 0 }}
@@ -212,9 +216,9 @@ const DocumentationPage = () => {
               transition={{ delay: 0.2 }}
               className="text-zinc-500 leading-relaxed font-medium"
             > 
-              {verificationState === 'loading' ? 'Checking cryptographic signatures and payment logs...' : 
-               verificationState === 'success' ? 'Your technical environment is ready. Entry sequence initiated.' :
-               'Your account is currently in GUEST MODE. To unlock the enterprise documentation, you must have an active license.'}
+              {verificationState === 'loading' ? 'Checking for active licenses and verifying your purchase...' : 
+               verificationState === 'success' ? 'License activated successfully. Loading documentation...' :
+                'To access the enterprise documentation, you need an active license. Purchase a plan or click "Activate License" if you\'ve already made a payment.'}
             </motion.p>
           </div>
 
@@ -222,10 +226,10 @@ const DocumentationPage = () => {
             <div className="flex flex-col gap-4">
               <button 
                 onClick={handleVerify}
-                className="w-full flex items-center justify-center gap-3 px-8 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl shadow-xl hover:bg-oracle-blue transition-all group"
+                className="w-full flex items-center justify-center gap-3 px-8 py-5 bg-linear-to-r from-oracle-blue to-blue-600 text-black font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-oracle-blue/25 hover:shadow-oracle-blue/40 transition-all group"
               >
-                <Activity className="w-5 h-5 group-hover:animate-spin" />
-                Verify My Payment
+                <Key className="w-5 h-5" />
+                Activate License
               </button>
               
               <Link 
@@ -233,7 +237,7 @@ const DocumentationPage = () => {
                 className="w-full flex items-center justify-center gap-3 px-8 py-5 bg-zinc-900 border border-white/10 text-white font-black uppercase tracking-widest rounded-2xl hover:bg-zinc-800 transition-all"
               >
                 <Zap className="w-5 h-5 text-oracle-blue" />
-                Acquire New License
+                Purchase a Plan
               </Link>
             </div>
           )}
