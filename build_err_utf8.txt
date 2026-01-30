@@ -1,0 +1,78 @@
+﻿[36mvite v7.3.1 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32mΓ£ô[39m 97 modules transformed.
+node.exe : [31mΓ£ù[39m Build failed in 308ms
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" 
+"C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([3 
+   1mΓ£ù[39m Build failed in 308ms:String) [],  
+   RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[31merror during build:
+[31m[vite:esbuild] Transform failed with 3 
+errors:
+C:/Users/David/Music/Oracle/src/pages/Auth/LoginP
+age.jsx:151:20: ERROR: Unexpected closing 
+fragment tag does not match opening "div" tag
+C:/Users/David/Music/Oracle/src/pages/Auth/LoginP
+age.jsx:171:14: ERROR: Unexpected closing "form" 
+tag does not match opening fragment tag
+C:/Users/David/Music/Oracle/src/pages/Auth/LoginP
+age.jsx:173:12: ERROR: Expected ")" but found 
+"{"[31m
+file: [36mC:/Users/David/Music/Oracle/src/pages/
+Auth/LoginPage.jsx:151:20[31m
+[33m
+[33mUnexpected closing fragment tag does not 
+match opening "div" tag[33m
+149 |                        Change email address
+150 |                      </button>
+151 |                    </>
+    |                      ^
+152 |                  )}
+153 |  
+
+[33mUnexpected closing "form" tag does not 
+match opening fragment tag[33m
+169 |                  )}
+170 |                </motion.button>
+171 |              </form>
+    |                ^
+172 |  
+173 |              {/* Divider */}
+
+[33mExpected ")" but found "{"[33m
+171 |              </form>
+172 |  
+173 |              {/* Divider */}
+    |              ^
+174 |              <div className="relative 
+my-8">
+175 |                <div className="absolute 
+inset-0 flex items-center">
+[31m
+    at failureErrorWithLog (C:\Users\David\Music\
+Oracle\node_modules\esbuild\lib\main.js:1467:15)
+    at C:\Users\David\Music\Oracle\node_modules\e
+sbuild\lib\main.js:736:50
+    at responseCallbacks.<computed> (C:\Users\Dav
+id\Music\Oracle\node_modules\esbuild\lib\main.js:
+603:9)
+    at handleIncomingPacket (C:\Users\David\Music
+\Oracle\node_modules\esbuild\lib\main.js:658:12)
+    at Socket.readFromStdout (C:\Users\David\Musi
+c\Oracle\node_modules\esbuild\lib\main.js:581:7)
+    at Socket.emit (node:events:519:28)
+    at addChunk 
+(node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode 
+(node:internal/streams/readable:512:3)
+    at Readable.push 
+(node:internal/streams/readable:392:5)
+    at Pipe.onStreamRead 
+(node:internal/stream_base_commons:189:23)[39m
+

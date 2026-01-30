@@ -168,8 +168,9 @@ const SignupPage = () => {
                     >
                       Change email address
                     </button>
-                  </>
-                )}
+                  </div>
+                </>
+              )}
 
               {/* Submit Button */}
               <motion.button
