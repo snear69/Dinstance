@@ -189,7 +189,7 @@ const SignupPage = () => {
                   <Loader2 className="w-5 h-5 animate-spin" />
                 ) : (
                   <>
-                    {step === 1 ? 'Send Verification Code' : 'Verify & Create Account'}
+                    Create Account
                     <ArrowRight className="w-5 h-5" />
                   </>
                 )}

@@ -169,7 +169,7 @@ const LoginPage = () => {
                   <Loader2 className="w-5 h-5 animate-spin" />
                 ) : (
                   <>
-                    {step === 1 ? 'Send Verification Code' : 'Sign In'}
+                    Sign In
                     <ArrowRight className="w-5 h-5" />
                   </>
                 )}
