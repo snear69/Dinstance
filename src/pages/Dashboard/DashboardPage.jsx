@@ -118,9 +118,8 @@ const DashboardPage = () => {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
           <div>
             <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight mb-2">
-              Welcome, <span className="text-oracle-blue">{user.name?.split(' ')[0]}</span>
+              Welcome, <span className="text-oracle-blue">{user.name}</span>
             </h1>
-            <p className="text-zinc-500">{user.email}</p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Link 

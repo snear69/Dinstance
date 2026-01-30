@@ -10,7 +10,7 @@ router.get('/purchases', authenticateToken, async (req, res) => {
   try {
     const db = await getDB();
     const transactions = db.data.transactions.filter(
-      t => t.userId === req.user.userId && t.type === 'purchase' && t.status === 'completed'
+      t => t.userId === req.user.id && t.type === 'purchase' && t.status === 'completed'
     );
 
     // Add download info to each purchase
@@ -19,7 +19,7 @@ router.get('/purchases', authenticateToken, async (req, res) => {
       planName: tx.planName,
       amount: Math.abs(tx.amount),
       purchasedAt: tx.createdAt,
-      downloadToken: Buffer.from(`${tx.id}:${req.user.userId}`).toString('base64'),
+      downloadToken: Buffer.from(`${tx.id}:${req.user.id}`).toString('base64'),
       downloaded: tx.downloaded || false
     }));
 
@@ -38,7 +38,7 @@ router.get('/download/:transactionId', authenticateToken, async (req, res) => {
     
     // Find the transaction
     const transaction = db.data.transactions.find(
-      t => t.id === transactionId && t.userId === req.user.userId && t.type === 'purchase'
+      t => t.id === transactionId && t.userId === req.user.id && t.type === 'purchase'
     );
 
     if (!transaction) {
@@ -46,7 +46,7 @@ router.get('/download/:transactionId', authenticateToken, async (req, res) => {
     }
 
     // Get user info
-    const user = db.data.users.find(u => u.id === req.user.userId);
+    const user = db.data.users.find(u => u.id === req.user.id);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -433,14 +433,14 @@ router.get('/purchase/:transactionId', authenticateToken, async (req, res) => {
     const db = await getDB();
     
     const transaction = db.data.transactions.find(
-      t => t.id === transactionId && t.userId === req.user.userId && t.type === 'purchase'
+      t => t.id === transactionId && t.userId === req.user.id && t.type === 'purchase'
     );
 
     if (!transaction) {
       return res.status(404).json({ error: 'Purchase not found' });
     }
 
-    const user = db.data.users.find(u => u.id === req.user.userId);
+    const user = db.data.users.find(u => u.id === req.user.id);
 
     res.json({
       purchase: {

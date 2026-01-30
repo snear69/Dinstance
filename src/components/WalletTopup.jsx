@@ -93,6 +93,12 @@ const WalletTopup = ({ isOpen, onClose, onSuccess, userEmail, token }) => {
           })
         });
 
+        const contentType = res.headers.get("content-type");
+        let data;
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+          data = await res.json();
+        }
+
         if (res.ok) {
           setSuccess(true);
           setAmount('');
@@ -104,12 +110,11 @@ const WalletTopup = ({ isOpen, onClose, onSuccess, userEmail, token }) => {
             onClose();
           }, 2000);
         } else {
-          const data = await res.json();
-          setError(data.error || 'Failed to credit wallet');
+          setError(data?.error || `Server error (${res.status}). Please contact support.`);
         }
       } catch (err) {
         console.error('Wallet credit error:', err);
-        setError('Payment received but failed to credit wallet. Contact support.');
+        setError(`Failed to connect to server. Check if your backend is running at ${API_URL}`);
       }
       setIsProcessing(false);
     };

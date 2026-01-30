@@ -31,7 +31,7 @@ import LoginPage from './pages/Auth/LoginPage';
 import SignupPage from './pages/Auth/SignupPage';
 import DashboardPage from './pages/Dashboard/DashboardPage';
 import AdminPage from './pages/Admin/AdminPage';
-import DownloadsPage from './pages/Downloads/DownloadsPage';
+import DocumentationPage from './pages/Downloads/DownloadsPage';
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -57,6 +57,8 @@ const HomePage = ({ onFulfillment, cart, updateCart }) => (
     <Guidelines />
   </main>
 );
+
+import TestSprite from './components/TestSprite';
 
 // Layout wrapper for pages that need navbar/footer
 const MainLayout = ({ children }) => {
@@ -129,6 +131,7 @@ function AppContent() {
     <>
       <ScrollToTop />
       {!isAdminPage && <LoadingScreen />}
+      <TestSprite />
       
       <div className="relative min-h-screen bg-oracle-dark">
         {!isAdminPage && <Scene />}
@@ -142,7 +145,7 @@ function AppContent() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/downloads" element={<DownloadsPage />} />
+            <Route path="/downloads" element={<DocumentationPage />} />
             <Route path="/oracle-admin" element={<AdminPage />} />
           </Routes>
         </MainLayout>

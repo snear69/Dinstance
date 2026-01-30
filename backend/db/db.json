@@ -5,7 +5,7 @@
       "email": "stxminus@gmail.com",
       "passwordHash": "$2b$10$ZdWYTrlKNYVLCudpLueqgulQWKUAnII.CCvEiHjkAN2pcOJvKbN1K",
       "name": "david",
-      "verified": false,
+      "verified": true,
       "createdAt": "2026-01-29T20:20:49.183Z"
     },
     {
@@ -15,6 +15,13 @@
       "name": "Smellonear",
       "verified": false,
       "createdAt": "2026-01-29T20:42:02.320Z"
+    },
+    {
+      "id": "c88c7ce4-8970-4476-a2df-84f410d72510",
+      "email": "davidolagbenro35@gmail.com",
+      "name": "davidolagbenro35",
+      "verified": true,
+      "createdAt": "2026-01-30T06:20:36.655Z"
     }
   ],
   "wallets": [
@@ -31,6 +38,13 @@
       "currency": "NGN",
       "createdAt": "2026-01-29T20:42:02.320Z",
       "updatedAt": "2026-01-29T21:02:41.366Z"
+    },
+    {
+      "userId": "c88c7ce4-8970-4476-a2df-84f410d72510",
+      "balance": 200,
+      "currency": "NGN",
+      "createdAt": "2026-01-30T06:20:36.655Z",
+      "updatedAt": "2026-01-30T06:22:24.556Z"
     }
   ],
   "transactions": [
@@ -93,6 +107,26 @@
       "reference": "wallet_topup_1769720506002_v0cab3",
       "status": "completed",
       "createdAt": "2026-01-29T21:02:41.366Z"
+    },
+    {
+      "id": "188c5457-c126-4112-a928-385ba4096678",
+      "userId": "c88c7ce4-8970-4476-a2df-84f410d72510",
+      "type": "topup",
+      "amount": 1000,
+      "description": "Wallet top-up via Paystack",
+      "reference": "wallet_topup_1769754055555_vlnzi",
+      "status": "completed",
+      "createdAt": "2026-01-30T06:21:35.679Z"
+    },
+    {
+      "id": "52a90cac-3ed8-4acb-a2d9-3db39ef376f0",
+      "userId": "c88c7ce4-8970-4476-a2df-84f410d72510",
+      "type": "purchase",
+      "amount": -800,
+      "planName": "Zero Free",
+      "description": "Purchased: Zero Free",
+      "status": "completed",
+      "createdAt": "2026-01-30T06:22:24.556Z"
     }
   ],
   "carts": [
@@ -107,6 +141,12 @@
       "items": [],
       "createdAt": "2026-01-29T20:42:02.340Z",
       "updatedAt": "2026-01-29T20:49:32.234Z"
+    },
+    {
+      "userId": "c88c7ce4-8970-4476-a2df-84f410d72510",
+      "items": [],
+      "createdAt": "2026-01-30T06:20:36.675Z",
+      "updatedAt": "2026-01-30T06:22:24.556Z"
     }
   ],
   "admins": [
