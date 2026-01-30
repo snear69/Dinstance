@@ -21,6 +21,7 @@ const DocumentationPage = () => {
   const [activePurchase, setActivePurchase] = useState(null);
   const [copied, setCopied] = useState(null);
   const [downloading, setDownloading] = useState(false);
+  const [verificationState, setVerificationState] = useState('idle'); // 'idle', 'loading', 'success'
 
   const fetchPurchases = useCallback(async () => {
     try {
@@ -37,17 +38,65 @@ const DocumentationPage = () => {
     } catch (error) {
       console.error('Failed to fetch purchases:', error);
     } finally {
-      setLoading(false);
+      // We don't set loading false immediately if we are in verification flow
     }
-  }, [token, API_URL]);
+  }, [token]);
 
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login');
       return;
     }
-    fetchPurchases();
+    const init = async () => {
+        await fetchPurchases();
+        setLoading(false);
+    };
+    init();
   }, [isAuthenticated, navigate, fetchPurchases]);
+
+  const handleVerify = async () => {
+    setVerificationState('loading');
+    
+    try {
+      // 1. Refresh user wallet/metadata
+      if (refreshWallet) await refreshWallet();
+      
+      // 2. Fetch latest purchases
+      const res = await fetch(`${API_URL}/downloads/purchases`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        const hasPurchases = data.purchases && data.purchases.length > 0;
+        
+        if (hasPurchases) {
+            setPurchases(data.purchases);
+            setActivePurchase(data.purchases[0]);
+            
+            // Wait a moment for the 'WOW' effect
+            setTimeout(() => {
+              setVerificationState('success');
+              
+              // Final transition to show the docs
+              setTimeout(() => {
+                setLoading(false);
+                setVerificationState('idle');
+              }, 1500);
+            }, 1000);
+        } else {
+            // No payment found yet
+            setTimeout(() => {
+                setVerificationState('idle');
+                alert("No active license found yet. It may take a minute for the blockchain sync. Please try again in 30 seconds.");
+            }, 1000);
+        }
+      }
+    } catch (error) {
+      console.error('Verification failed:', error);
+      setVerificationState('idle');
+    }
+  };
 
   const copyToClipboard = (text, id) => {
     navigator.clipboard.writeText(text);
@@ -81,7 +130,17 @@ const DocumentationPage = () => {
     }
   };
 
-  if (loading) {
+  const sidebarItems = [
+    { id: 'overview', label: 'Platform Overview', icon: Layout },
+    { id: 'getting-started', label: 'Getting Started', icon: Zap },
+    { id: 'api-reference', label: 'API Reference', icon: Code },
+    { id: 'sdk', label: 'SDK Usage', icon: Terminal },
+    { id: 'endpoints', label: 'Endpoint Management', icon: Globe },
+    { id: 'monitoring', label: 'Real-time Monitoring', icon: Activity },
+    { id: 'security', label: 'Security & Auth', icon: Shield },
+  ];
+
+  if (loading && verificationState === 'idle') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-oracle-dark">
         <Loader2 className="w-8 h-8 text-oracle-blue animate-spin" />
@@ -89,7 +148,7 @@ const DocumentationPage = () => {
     );
   }
 
-  if (purchases.length === 0) {
+  if (purchases.length === 0 || verificationState !== 'idle') {
     return (
       <div className="min-h-screen bg-oracle-dark flex flex-col items-center justify-center p-6 relative overflow-hidden">
         {/* Background Effects */}
@@ -97,24 +156,55 @@ const DocumentationPage = () => {
         
         <div className="max-w-md w-full text-center space-y-10 relative z-10">
           <div className="relative mx-auto w-32 h-32">
-            <motion.div 
-              animate={{ rotate: 360 }}
-              transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-              className="absolute -inset-4 border-2 border-dashed border-red-500/20 rounded-full"
-            />
-            <div className="w-full h-full bg-zinc-900 rounded-4xl border border-white/10 flex items-center justify-center shadow-2xl relative">
-              <Lock className="w-12 h-12 text-zinc-700" />
-              <div className="absolute -top-2 -right-2 bg-red-600 px-2 py-0.5 rounded text-[8px] font-black uppercase">Blocked</div>
-            </div>
+            <AnimatePresence mode="wait">
+              {verificationState === 'loading' ? (
+                <motion.div 
+                  key="loading-icon"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 1.2, opacity: 0 }}
+                  className="w-full h-full flex items-center justify-center"
+                >
+                  <div className="absolute inset-0 border-2 border-oracle-blue rounded-full border-t-transparent animate-spin" />
+                  <Activity className="w-12 h-12 text-oracle-blue animate-pulse" />
+                </motion.div>
+              ) : verificationState === 'success' ? (
+                <motion.div 
+                  key="success-icon"
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  className="w-full h-full bg-green-500 rounded-full flex items-center justify-center shadow-[0_0_50px_rgba(34,197,94,0.4)]"
+                >
+                  <Check className="w-16 h-16 text-black stroke-[4px]" />
+                </motion.div>
+              ) : (
+                <motion.div 
+                  key="lock-icon"
+                  className="relative w-full h-full"
+                >
+                  <motion.div 
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                    className="absolute -inset-4 border-2 border-dashed border-red-500/20 rounded-full"
+                  />
+                  <div className="w-full h-full bg-zinc-900 rounded-4xl border border-white/10 flex items-center justify-center shadow-2xl relative">
+                    <Lock className="w-12 h-12 text-zinc-700" />
+                    <div className="absolute -top-2 -right-2 bg-red-600 px-2 py-0.5 rounded text-[8px] font-black uppercase">Blocked</div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           <div className="space-y-4">
             <motion.h1 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
+              key={verificationState}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
               className="text-4xl font-black text-white tracking-tighter uppercase italic"
             >
-              License Required
+              {verificationState === 'loading' ? 'Verifying Node...' : 
+               verificationState === 'success' ? 'Access Granted' : 'License Required'}
             </motion.h1>
             <motion.p 
               initial={{ opacity: 0 }}
@@ -122,31 +212,31 @@ const DocumentationPage = () => {
               transition={{ delay: 0.2 }}
               className="text-zinc-500 leading-relaxed font-medium"
             > 
-              Your account is currently in <span className="text-red-400">GUEST MODE</span>. To unlock the enterprise documentation and node management terminal, you must have an active license.
+              {verificationState === 'loading' ? 'Checking cryptographic signatures and payment logs...' : 
+               verificationState === 'success' ? 'Your technical environment is ready. Entry sequence initiated.' :
+               'Your account is currently in GUEST MODE. To unlock the enterprise documentation, you must have an active license.'}
             </motion.p>
           </div>
 
-          <div className="flex flex-col gap-4">
-            <button 
-              onClick={() => {
-                setLoading(true);
-                refreshWallet();
-                fetchPurchases();
-              }}
-              className="w-full flex items-center justify-center gap-3 px-8 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl shadow-xl hover:bg-oracle-blue transition-all group"
-            >
-              <Activity className="w-5 h-5 group-hover:animate-spin" />
-              Verify My Payment
-            </button>
-            
-            <Link 
-              to="/#pricing" 
-              className="w-full flex items-center justify-center gap-3 px-8 py-5 bg-zinc-900 border border-white/10 text-white font-black uppercase tracking-widest rounded-2xl hover:bg-zinc-800 transition-all"
-            >
-              <Zap className="w-5 h-5 text-oracle-blue" />
-              Acquire New License
-            </Link>
-          </div>
+          {verificationState === 'idle' && (
+            <div className="flex flex-col gap-4">
+              <button 
+                onClick={handleVerify}
+                className="w-full flex items-center justify-center gap-3 px-8 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl shadow-xl hover:bg-oracle-blue transition-all group"
+              >
+                <Activity className="w-5 h-5 group-hover:animate-spin" />
+                Verify My Payment
+              </button>
+              
+              <Link 
+                to="/#pricing" 
+                className="w-full flex items-center justify-center gap-3 px-8 py-5 bg-zinc-900 border border-white/10 text-white font-black uppercase tracking-widest rounded-2xl hover:bg-zinc-800 transition-all"
+              >
+                <Zap className="w-5 h-5 text-oracle-blue" />
+                Acquire New License
+              </Link>
+            </div>
+          )}
 
           <div className="pt-8 border-t border-white/5">
             <Link to="/dashboard" className="text-zinc-600 hover:text-white transition-colors text-sm font-bold flex items-center justify-center gap-2">
@@ -158,16 +248,6 @@ const DocumentationPage = () => {
       </div>
     );
   }
-
-  const sidebarItems = [
-    { id: 'overview', label: 'Platform Overview', icon: Layout },
-    { id: 'getting-started', label: 'Getting Started', icon: Zap },
-    { id: 'api-reference', label: 'API Reference', icon: Code },
-    { id: 'sdk', label: 'SDK Usage', icon: Terminal },
-    { id: 'endpoints', label: 'Endpoint Management', icon: Globe },
-    { id: 'monitoring', label: 'Real-time Monitoring', icon: Activity },
-    { id: 'security', label: 'Security & Auth', icon: Shield },
-  ];
 
   return (
     <div className="min-h-screen bg-oracle-dark text-white flex flex-col lg:flex-row">

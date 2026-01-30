@@ -58,7 +58,6 @@ const HomePage = ({ onFulfillment, cart, updateCart }) => (
   </main>
 );
 
-import TestSprite from './components/TestSprite';
 
 // Layout wrapper for pages that need navbar/footer
 const MainLayout = ({ children }) => {
@@ -131,7 +130,6 @@ function AppContent() {
     <>
       <ScrollToTop />
       {!isAdminPage && <LoadingScreen />}
-      <TestSprite />
       
       <div className="relative min-h-screen bg-oracle-dark">
         {!isAdminPage && <Scene />}
