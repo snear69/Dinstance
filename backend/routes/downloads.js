@@ -2,6 +2,7 @@ import express from 'express';
 import { getDB, generateId, timestamp } from '../db/index.js';
 import { authenticateToken } from '../middleware/auth.js';
 import archiver from 'archiver';
+import { Buffer } from 'buffer';
 
 const router = express.Router();
 
@@ -9,9 +10,25 @@ const router = express.Router();
 router.get('/purchases', authenticateToken, async (req, res) => {
   try {
     const db = await getDB();
-    const transactions = db.data.transactions.filter(
+    const user = db.data.users.find(u => u.id === req.user.id);
+    
+    let transactions = db.data.transactions.filter(
       t => t.userId === req.user.id && t.type === 'purchase' && t.status === 'completed'
     );
+
+    // EMERGENCY BYPASS FOR DEV TESTING (If database wiped on Render)
+    const devEmails = ['davidolagbenro69@gmail.com', 'stxminus@gmail.com', 'davidolagbenro35@gmail.com'];
+    if (transactions.length === 0 && user && devEmails.includes(user.email)) {
+      console.log('DEV_DEBUG: Triggering Emergency Bypass for', user.email);
+      // Create a virtual transaction so they can see the docs
+      transactions = [{
+        id: 'dev_bypass_' + Date.now(),
+        planName: 'Enterprise (Dev Bypass)',
+        amount: 0,
+        createdAt: new Date().toISOString(),
+        downloaded: false
+      }];
+    }
 
     // Add download info to each purchase
     const purchases = transactions.map(tx => ({
